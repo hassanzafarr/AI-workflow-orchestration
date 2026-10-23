@@ -163,7 +163,8 @@ export class DagView {
       stage: depth.get(s.id)!,
     }));
     const edges: Edge[] = steps.flatMap((s) =>
-      s.dependsOn
+      // Hand-edited drafts in the editor may omit dependsOn.
+      (s.dependsOn ?? [])
         .filter((d) => pos.has(d))
         .map((d) => {
           const a = pos.get(d)!;

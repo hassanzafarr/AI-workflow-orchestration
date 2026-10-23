@@ -1,7 +1,8 @@
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { computed, effect, inject, Injectable, signal, untracked } from '@angular/core';
 import { ApiService } from './api.service';
 import { RunStatus, RunSummary, StepType, Task, TaskStatus, WorkflowListItem } from './models';
 import { RealtimeService } from './realtime.service';
+import { SettingsService } from './settings.service';
 
 /** Andon lamp states: what the line board shows for a workflow or the queue. */
 export type Lamp = 'run' | 'wait' | 'fail' | 'queue' | 'hold' | 'off';
@@ -53,6 +54,7 @@ const FAILED_WINDOW_MS = 24 * 3600_000;
 export class LineService {
   private readonly api = inject(ApiService);
   private readonly rt = inject(RealtimeService);
+  private readonly settings = inject(SettingsService);
 
   readonly workflows = signal<WorkflowListItem[]>([]);
   readonly tracked = signal<Map<string, TrackedRun>>(new Map());
@@ -121,21 +123,23 @@ export class LineService {
   });
 
   constructor() {
-    this.loadWorkflows();
-    this.loadFailed();
-    this.api.runs({ status: LIVE.join(','), limit: 50 }).subscribe({ next: (r) => r.runs.forEach((run) => this.track(run)), error: () => undefined });
-    this.api.runs({ limit: 20 }).subscribe({
-      next: (r) =>
-        this.rt.seedActivity(
-          r.runs.map((run) => ({ runId: run.id, label: run.workflowName, status: run.status, kind: 'run' as const, at: run.finishedAt ?? run.startedAt ?? run.createdAt })),
-        ),
-      error: () => undefined,
-    });
-
+    this.refresh();
     this.rt.events$.subscribe((e) => {
       if (e.type === 'run.updated') this.onRun(e.run);
       else if (e.type === 'task.updated') this.onTask(e.task);
       else if (e.type === 'workflow.updated') this.loadWorkflows();
+    });
+
+    // Resync after a reconnect (events sent while the socket was down are lost) and after a new
+    // API token (the earlier loads may have been refused with a 401). The first connect is covered above.
+    let connects = 0;
+    let token = this.settings.token();
+    effect(() => {
+      const reconnected = this.rt.connected() && connects++ > 0;
+      const next = this.settings.token();
+      const newToken = next !== token;
+      token = next;
+      if (reconnected || newToken) untracked(() => this.refresh());
     });
   }
 
@@ -181,6 +185,28 @@ export class LineService {
         this.tracked.update((m) => (m.has(run.id) ? new Map(m).set(run.id, { ...m.get(run.id)!, stations }) : m));
       },
       error: () => this.loading.delete(run.id),
+    });
+  }
+
+  /** Load the board from scratch: workflows, recent failures, runs in flight and the feed backfill. */
+  private refresh(): void {
+    this.loadWorkflows();
+    this.loadFailed();
+    this.api.runs({ status: LIVE.join(','), limit: 50 }).subscribe({
+      next: (r) => {
+        const live = new Set(r.runs.map((run) => run.id));
+        // Runs that finished while we weren't listening would otherwise stay on the board as live.
+        this.tracked.update((m) => new Map([...m].filter(([id, t]) => live.has(id) || !LIVE.includes(t.run.status))));
+        r.runs.forEach((run) => this.track(run));
+      },
+      error: () => undefined,
+    });
+    this.api.runs({ limit: 20 }).subscribe({
+      next: (r) =>
+        this.rt.seedActivity(
+          r.runs.map((run) => ({ runId: run.id, label: run.workflowName, status: run.status, kind: 'run' as const, at: run.finishedAt ?? run.startedAt ?? run.createdAt })),
+        ),
+      error: () => undefined,
     });
   }
 
