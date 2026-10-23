@@ -1,6 +1,7 @@
-import { Component, computed, input } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { ThroughputPoint } from '../core/models';
-import { QueueSample } from '../core/realtime.service';
+import { QueueSample, RealtimeService } from '../core/realtime.service';
+import { timeAgo } from './format';
 
 /** Stacked per-minute bars: succeeded steps with failures on top. */
 @Component({
@@ -61,7 +62,7 @@ export class ThroughputChart {
   template: `
     @if (paths().maxQueue === 0) {
       <p class="chart-idle">
-        <i class="lamp s-pending"></i>Nothing queued or running for {{ idleFor() }}. {{ workersNow() }} {{ workersNow() === 1 ? 'worker' : 'workers' }} standing by.
+        <i class="lamp s-pending"></i>Nothing queued or running{{ lastActivity() ? '; last activity ' + lastActivity() : '' }}. {{ workersNow() }} {{ workersNow() === 1 ? 'worker' : 'workers' }} standing by.
       </p>
     } @else {
       <svg class="chart" [attr.viewBox]="'0 0 ' + width + ' ' + height" preserveAspectRatio="none" role="img" aria-label="Queue depth and workers over time">
@@ -79,14 +80,15 @@ export class ThroughputChart {
 })
 export class ScalingChart {
   readonly samples = input.required<QueueSample[]>();
+  private readonly rt = inject(RealtimeService);
   protected readonly width = 600;
   protected readonly height = 140;
 
   protected readonly workersNow = computed(() => this.samples().at(-1)?.workers ?? 0);
-  protected readonly idleFor = computed(() => {
-    const s = this.samples();
-    const secs = s.length > 1 ? Math.round((s[s.length - 1].at - s[0].at) / 1000) : 0;
-    return secs < 90 ? `${secs}s` : `${Math.round(secs / 60)} min`;
+  /** Idle time is read from the newest real event, not from when this page started sampling. */
+  protected readonly lastActivity = computed(() => {
+    const newest = this.rt.activity()[0]?.at;
+    return newest ? timeAgo(newest, this.samples().at(-1)?.at) : '';
   });
 
   protected readonly paths = computed(() => {

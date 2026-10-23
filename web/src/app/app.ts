@@ -38,7 +38,7 @@ import { Icon } from './shared/icon';
           <a routerLink="/runs" routerLinkActive="active">
             <app-icon name="runs" />Runs
             @if (line.liveCount() > 0) {
-              <span class="count count-live" [attr.aria-label]="line.liveCount() + ' in flight'">{{ line.liveCount() }}</span>
+              <span class="count" [class]="line.gated().size ? 'count count-attn' : 'count count-live'" [attr.aria-label]="line.liveCount() + ' in flight'">{{ line.liveCount() }}</span>
             }
           </a>
           <a routerLink="/workers" routerLinkActive="active">

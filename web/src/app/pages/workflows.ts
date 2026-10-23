@@ -3,6 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { ApiService } from '../core/api.service';
+import { LineService } from '../core/line.service';
 import { WorkflowListItem } from '../core/models';
 import { RealtimeService } from '../core/realtime.service';
 import { ToastService } from '../core/toast.service';
@@ -79,7 +80,7 @@ import { StatusBadge } from '../shared/status-badge';
               </div>
               <div class="wf-last">
                 @if (wf.lastRun) {
-                  <a [routerLink]="['/runs', wf.lastRun.id]"><app-status [status]="wf.lastRun.status" /></a>
+                  <a [routerLink]="['/runs', wf.lastRun.id]"><app-status [status]="line.runLamp(wf.lastRun)" /></a>
                   <span class="muted small">{{ wf.lastRun.createdAt | ago }} · {{ wf.runCount }} {{ wf.runCount === 1 ? 'run' : 'runs' }}</span>
                 } @else {
                   <span class="muted small">Never run</span>
@@ -115,6 +116,7 @@ export class WorkflowsPage {
   private readonly api = inject(ApiService);
   private readonly router = inject(Router);
   private readonly toast = inject(ToastService);
+  protected readonly line = inject(LineService);
 
   protected readonly workflows = signal<WorkflowListItem[]>([]);
   protected readonly loading = signal(true);
