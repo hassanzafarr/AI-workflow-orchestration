@@ -1,0 +1,20 @@
+# Non-secret settings shared by the API and worker. Secrets (DATABASE_URL, ANTHROPIC_API_KEY,
+# API_TOKEN) come from the wfo-secrets Secret, generated per overlay.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: wfo-config
+data:
+  NODE_ENV: production
+  LOG_FORMAT: json
+  REDIS_URL: redis://wfo-redis:6379
+  LLM_MODE: auto
+  CLAUDE_MODEL: claude-opus-5-5
+  WORKER_CONCURRENCY: "4"
+  STEP_DEFAULT_TIMEOUT_MS: "600000"
+  K8S_NAMESPACE: wfo
+  WORKER_DEPLOYMENT: wfo-worker
+  WORKER_SCALEDOBJECT: wfo-worker
+  WORKER_HPA: wfo-worker
+  # keda | hpa | deployment - overridden by the keda/hpa components.
+  SCALER_KIND: deployment

@@ -1,0 +1,75 @@
+# Worker microservice: executes workflow steps from the Redis-backed queue. Replicas are driven
+# by KEDA (queue depth) or an HPA (CPU) from the components; the cluster autoscaler / Karpenter
+# then adds nodes to the worker pool when pending pods don't fit. SIGTERM drains in-flight steps
+# before exit, so scale-in never drops work.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wfo-worker
+  labels: { app.kubernetes.io/name: wfo-worker, app.kubernetes.io/component: worker }
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app.kubernetes.io/name: wfo-worker }
+  strategy:
+    rollingUpdate: { maxUnavailable: 0, maxSurge: 25% }
+  template:
+    metadata:
+      labels: { app.kubernetes.io/name: wfo-worker, app.kubernetes.io/component: worker }
+    spec:
+      securityContext: { runAsNonRoot: true, runAsUser: 1000, fsGroup: 1000 }
+      # Long LLM calls get time to finish; anything still running is recovered by BullMQ stall
+      # detection and the API reconciler on another pod.
+      terminationGracePeriodSeconds: 300
+      affinity:
+        nodeAffinity:
+          # Prefer the dedicated, autoscaled worker node pool when the cluster has one.
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - { key: wfo.dev/pool, operator: In, values: ["workers"] }
+      tolerations:
+        - { key: wfo.dev/pool, operator: Equal, value: workers, effect: NoSchedule }
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels: { app.kubernetes.io/name: wfo-worker }
+      containers:
+        - name: worker
+          image: wfo-backend
+          command: ["node", "dist/worker/main.js"]
+          ports:
+            - { name: health, containerPort: 9100 }
+          envFrom:
+            - configMapRef: { name: wfo-config }
+            - secretRef: { name: wfo-secrets }
+          env:
+            # Pod name doubles as the worker id shown on the dashboard.
+            - name: WORKER_ID
+              valueFrom: { fieldRef: { fieldPath: metadata.name } }
+          readinessProbe:
+            httpGet: { path: /readyz, port: health }
+            periodSeconds: 5
+          livenessProbe:
+            httpGet: { path: /healthz, port: health }
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          resources:
+            requests: { cpu: 250m, memory: 256Mi }
+            limits: { memory: 768Mi }
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: { drop: ["ALL"] }
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: wfo-worker
+spec:
+  maxUnavailable: 25%
+  selector:
+    matchLabels: { app.kubernetes.io/name: wfo-worker }

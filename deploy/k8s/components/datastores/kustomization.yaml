@@ -1,0 +1,7 @@
+# In-cluster Postgres and Redis for dev/staging. In production prefer managed services
+# (RDS/Cloud SQL, ElastiCache/Memorystore) and drop this component.
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+resources:
+  - postgres.yaml
+  - redis.yaml

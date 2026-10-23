@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: wfo
+          POSTGRES_PASSWORD: wfo
+          POSTGRES_DB: wfo_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U wfo -d wfo_test" --health-interval 3s --health-timeout 3s --health-retries 20
+      redis:
+        image: redis:7.4-alpine
+        ports: ["6379:6379"]
+        options: >-
+          --health-cmd "redis-cli ping" --health-interval 3s --health-timeout 3s --health-retries 20
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run build
+      - run: npm run test:integration
+        env:
+          TEST_DATABASE_URL: postgres://wfo:wfo@localhost:5432/wfo_test
+          TEST_REDIS_URL: redis://localhost:6379/15
+
+  web:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      - run: npx ng build --configuration production
+
+  manifests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Render Kustomize overlays
+        run: |
+          kubectl kustomize deploy/k8s/overlays/local > /dev/null
+          cp deploy/k8s/overlays/production/secrets.env.example deploy/k8s/overlays/production/secrets.env
+          kubectl kustomize deploy/k8s/overlays/production > /dev/null
+
+  images:
+    runs-on: ubuntu-latest
+    needs: [backend, web]
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t wfo-backend:ci ./backend
+      - run: docker build -t wfo-web:ci ./web

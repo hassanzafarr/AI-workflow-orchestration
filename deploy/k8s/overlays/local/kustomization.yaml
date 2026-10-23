@@ -1,0 +1,42 @@
+# Local cluster (Docker Desktop Kubernetes, kind, minikube) with in-cluster datastores and KEDA.
+#   docker build -t wfo-backend:local ./backend && docker build -t wfo-web:local ./web
+#   kubectl apply -k deploy/k8s/overlays/local
+# No KEDA installed? Swap ../../components/keda for ../../components/hpa.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../base
+components:
+  - ../../components/datastores
+  - ../../components/keda
+images:
+  - { name: wfo-backend, newName: wfo-backend, newTag: local }
+  - { name: wfo-web, newName: wfo-web, newTag: local }
+generatorOptions:
+  # Stable name: the datastores component references it by name.
+  disableNameSuffixHash: true
+secretGenerator:
+  - name: wfo-secrets
+    namespace: wfo
+    literals:
+      - POSTGRES_PASSWORD=wfo-local
+      - DATABASE_URL=postgres://wfo:wfo-local@wfo-postgres:5432/wfo
+      # Leave empty to run LLM steps in mock mode, or set your key here / via `kubectl create secret`.
+      - ANTHROPIC_API_KEY=
+      - API_TOKEN=
+patches:
+  - target: { kind: Deployment, name: wfo-api }
+    patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 1
+  - target: { kind: Deployment, name: wfo-web }
+    patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 1
+  - target: { kind: Deployment }
+    patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/imagePullPolicy
+        value: IfNotPresent

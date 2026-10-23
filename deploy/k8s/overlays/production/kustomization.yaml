@@ -1,0 +1,29 @@
+# Production: KEDA autoscaling, images from a registry, secrets from a git-ignored env file
+# (or swap the generator for External Secrets / Sealed Secrets).
+#   cp deploy/k8s/overlays/production/secrets.env.example deploy/k8s/overlays/production/secrets.env
+#   kubectl apply -k deploy/k8s/overlays/production
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../base
+components:
+  # Remove when DATABASE_URL / REDIS_URL point at managed services.
+  - ../../components/datastores
+  - ../../components/keda
+images:
+  - { name: wfo-backend, newName: ghcr.io/your-org/wfo-backend, newTag: "0.1.0" }
+  - { name: wfo-web, newName: ghcr.io/your-org/wfo-web, newTag: "0.1.0" }
+generatorOptions:
+  # Stable name: the datastores component references it by name.
+  disableNameSuffixHash: true
+secretGenerator:
+  - name: wfo-secrets
+    namespace: wfo
+    envs:
+      - secrets.env
+patches:
+  - target: { kind: Ingress, name: wfo }
+    patch: |-
+      - op: replace
+        path: /spec/rules/0/host
+        value: wfo.example.com

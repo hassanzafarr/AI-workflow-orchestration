@@ -1,0 +1,20 @@
+{
+  "name": "ai-workflow-orchestration-platform",
+  "private": true,
+  "description": "Dashboard + Kubernetes-scaled microservices for running AI workflows",
+  "scripts": {
+    "setup": "npm --prefix backend install && npm --prefix web install",
+    "infra": "docker compose up -d postgres redis",
+    "dev": "concurrently -k -n api,worker,web -c blue,magenta,green \"npm --prefix backend run dev:api\" \"npm --prefix backend run dev:worker\" \"npm --prefix web start\"",
+    "test": "npm --prefix backend test",
+    "test:integration": "npm --prefix backend run test:integration",
+    "smoke": "node scripts/smoke.mjs",
+    "load": "node scripts/load.mjs",
+    "build": "npm --prefix backend run build && npm --prefix web run build",
+    "stack": "docker compose up --build",
+    "k8s:render": "kubectl kustomize deploy/k8s/overlays/local"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}

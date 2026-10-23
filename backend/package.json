@@ -1,0 +1,42 @@
+{
+  "name": "wfo-backend",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI Workflow Orchestration Platform - API gateway and worker microservices",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev:api": "tsx watch src/api/main.ts",
+    "dev:worker": "tsx watch src/worker/main.ts",
+    "build": "tsc -p tsconfig.build.json",
+    "start:api": "node dist/api/main.js",
+    "start:worker": "node dist/worker/main.js",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:integration": "cross-env INTEGRATION=1 vitest run"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^1.2.0",
+    "bullmq": "^6.4.0",
+    "cors": "^2.8.6",
+    "express": "^5.3.0",
+    "ioredis": "^6.0.0",
+    "pg": "^8.23.1",
+    "ws": "^8.22.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/node": "^22.20.5",
+    "@types/pg": "^8.23.1",
+    "@types/ws": "^8.18.2",
+    "cross-env": "^10.1.0",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.5"
+  }
+}

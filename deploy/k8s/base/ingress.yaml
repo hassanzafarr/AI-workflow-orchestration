@@ -1,0 +1,23 @@
+# Dashboard on /, API and WebSocket straight to the API pods. Assumes ingress-nginx.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: wfo
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: wfo.localhost
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend: { service: { name: wfo-api, port: { name: http } } }
+          - path: /ws
+            pathType: Prefix
+            backend: { service: { name: wfo-api, port: { name: http } } }
+          - path: /
+            pathType: Prefix
+            backend: { service: { name: wfo-web, port: { name: http } } }

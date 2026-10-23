@@ -1,0 +1,78 @@
+# Local stack: Postgres + Redis + API + worker(s) + Angular dashboard.
+#   docker compose up --build                     # everything, dashboard on http://localhost:8080
+#   docker compose up -d postgres redis           # just infra, for `npm run dev`
+#   docker compose up --build --scale worker=4    # more workers
+
+name: wfo
+
+x-backend-env: &backend-env
+  NODE_ENV: production
+  DATABASE_URL: postgres://wfo:wfo@postgres:5432/wfo
+  REDIS_URL: redis://redis:6379
+  LLM_MODE: ${LLM_MODE:-auto}
+  CLAUDE_MODEL: ${CLAUDE_MODEL:-claude-opus-5-5}
+  ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+  API_TOKEN: ${API_TOKEN:-}
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: wfo
+      POSTGRES_PASSWORD: wfo
+      POSTGRES_DB: wfo
+    ports: ["${PG_HOST_PORT:-55432}:5432"]
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./deploy/docker/postgres-init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U wfo -d wfo"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    image: redis:7.4-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    ports: ["${REDIS_HOST_PORT:-56379}:6379"]
+    volumes: [redisdata:/data]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  api:
+    build: ./backend
+    image: wfo-backend:local
+    command: ["node", "dist/api/main.js"]
+    environment:
+      <<: *backend-env
+      PORT: "3000"
+    ports: ["3000:3000"]
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+
+  worker:
+    image: wfo-backend:local
+    command: ["node", "dist/worker/main.js"]
+    environment:
+      <<: *backend-env
+      WORKER_CONCURRENCY: "4"
+    # Graceful drain on scale-in mirrors the Kubernetes terminationGracePeriodSeconds.
+    stop_grace_period: 60s
+    depends_on:
+      api: { condition: service_started }
+
+  web:
+    build: ./web
+    image: wfo-web:local
+    environment:
+      API_UPSTREAM: api:3000
+    ports: ["8080:8080"]
+    depends_on: [api]
+
+volumes:
+  pgdata:
+  redisdata:

@@ -1,0 +1,13 @@
+# Queue-driven autoscaling with KEDA (https://keda.sh). Requires the KEDA operator in the cluster:
+#   helm repo add kedacore https://kedacore.github.io/charts
+#   helm install keda kedacore/keda --namespace keda --create-namespace
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+resources:
+  - scaledobject.yaml
+patches:
+  - target: { kind: ConfigMap, name: wfo-config }
+    patch: |-
+      - op: replace
+        path: /data/SCALER_KIND
+        value: keda

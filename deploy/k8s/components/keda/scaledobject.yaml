@@ -1,0 +1,40 @@
+# Scales workers on the BullMQ wait list (`bull:tasks:wait`): roughly one replica per
+# `listLength` waiting steps. Scale-up is immediate and aggressive (heavy job bursts), scale-down
+# is slow so a burst of follow-up steps doesn't thrash pods. CPU is a secondary signal for
+# compute-heavy steps. Operators can move min/max from the dashboard (PATCHes this object).
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: wfo-worker
+spec:
+  scaleTargetRef:
+    name: wfo-worker
+  minReplicaCount: 1
+  maxReplicaCount: 30
+  pollingInterval: 5
+  cooldownPeriod: 180
+  advanced:
+    horizontalPodAutoscalerConfig:
+      behavior:
+        scaleUp:
+          stabilizationWindowSeconds: 0
+          selectPolicy: Max
+          policies:
+            - { type: Percent, value: 100, periodSeconds: 15 }
+            - { type: Pods, value: 5, periodSeconds: 15 }
+        scaleDown:
+          stabilizationWindowSeconds: 180
+          policies:
+            - { type: Percent, value: 50, periodSeconds: 60 }
+  triggers:
+    - type: redis
+      metadata:
+        address: wfo-redis.wfo.svc.cluster.local:6379
+        listName: bull:tasks:wait
+        # Target waiting steps per replica: 2x WORKER_CONCURRENCY keeps every slot busy.
+        listLength: "8"
+        activationListLength: "0"
+    - type: cpu
+      metricType: Utilization
+      metadata:
+        value: "75"

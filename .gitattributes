@@ -1,0 +1,2 @@
+# Keep LF everywhere so Dockerfiles, nginx templates and scripts behave the same on every OS.
+* text=auto eol=lf
