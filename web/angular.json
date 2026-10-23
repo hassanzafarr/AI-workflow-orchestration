@@ -50,6 +50,13 @@
               }
             ],
             "styles": [
+              "node_modules/@fontsource/barlow/latin-400.css",
+              "node_modules/@fontsource/barlow/latin-500.css",
+              "node_modules/@fontsource/barlow/latin-600.css",
+              "node_modules/@fontsource/barlow/latin-700.css",
+              "node_modules/@fontsource/barlow-semi-condensed/latin-500.css",
+              "node_modules/@fontsource/barlow-semi-condensed/latin-600.css",
+              "node_modules/@fontsource/jetbrains-mono/latin-400.css",
               "src/styles.css"
             ]
           },

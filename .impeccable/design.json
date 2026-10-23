@@ -1,0 +1,1070 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-23T19:04:37.608Z",
+  "title": "Design System: Orchestrator",
+  "extensions": {
+    "colorMeta": {
+      "primary": {
+        "role": "primary",
+        "displayName": "Machine Green",
+        "canonical": "#1d3a32",
+        "oklch": "oklch(32.3% 0.038 174.0)",
+        "tonalRamp": [
+          "oklch(15.0% 0.038 174.0)",
+          "oklch(26.4% 0.038 174.0)",
+          "oklch(37.9% 0.038 174.0)",
+          "oklch(49.3% 0.038 174.0)",
+          "oklch(60.7% 0.038 174.0)",
+          "oklch(72.1% 0.038 174.0)",
+          "oklch(83.6% 0.038 174.0)",
+          "oklch(95.0% 0.038 174.0)"
+        ]
+      },
+      "primary-hover": {
+        "role": "primary",
+        "displayName": "Machine Green Lift",
+        "canonical": "#2a5045",
+        "oklch": "oklch(39.9% 0.048 173.1)",
+        "tonalRamp": [
+          "oklch(15.0% 0.048 173.1)",
+          "oklch(26.4% 0.048 173.1)",
+          "oklch(37.9% 0.048 173.1)",
+          "oklch(49.3% 0.048 173.1)",
+          "oklch(60.7% 0.048 173.1)",
+          "oklch(72.1% 0.048 173.1)",
+          "oklch(83.6% 0.048 173.1)",
+          "oklch(95.0% 0.048 173.1)"
+        ]
+      },
+      "on-primary": {
+        "role": "primary",
+        "displayName": "On Machine Green",
+        "canonical": "#ffffff",
+        "oklch": "oklch(100.0% 0.000 0)",
+        "tonalRamp": [
+          "oklch(15.0% 0.000 0)",
+          "oklch(26.4% 0.000 0)",
+          "oklch(37.9% 0.000 0)",
+          "oklch(49.3% 0.000 0)",
+          "oklch(60.7% 0.000 0)",
+          "oklch(72.1% 0.000 0)",
+          "oklch(83.6% 0.000 0)",
+          "oklch(95.0% 0.000 0)"
+        ]
+      },
+      "rail": {
+        "role": "primary",
+        "displayName": "Rail Green",
+        "canonical": "#1d3a32",
+        "oklch": "oklch(32.3% 0.038 174.0)",
+        "tonalRamp": [
+          "oklch(15.0% 0.038 174.0)",
+          "oklch(26.4% 0.038 174.0)",
+          "oklch(37.9% 0.038 174.0)",
+          "oklch(49.3% 0.038 174.0)",
+          "oklch(60.7% 0.038 174.0)",
+          "oklch(72.1% 0.038 174.0)",
+          "oklch(83.6% 0.038 174.0)",
+          "oklch(95.0% 0.038 174.0)"
+        ]
+      },
+      "rail-hover": {
+        "role": "primary",
+        "displayName": "Rail Hover",
+        "canonical": "#26473e",
+        "oklch": "oklch(36.9% 0.042 174.4)",
+        "tonalRamp": [
+          "oklch(15.0% 0.042 174.4)",
+          "oklch(26.4% 0.042 174.4)",
+          "oklch(37.9% 0.042 174.4)",
+          "oklch(49.3% 0.042 174.4)",
+          "oklch(60.7% 0.042 174.4)",
+          "oklch(72.1% 0.042 174.4)",
+          "oklch(83.6% 0.042 174.4)",
+          "oklch(95.0% 0.042 174.4)"
+        ]
+      },
+      "rail-active": {
+        "role": "primary",
+        "displayName": "Rail Active",
+        "canonical": "#2f5649",
+        "oklch": "oklch(42.0% 0.050 170.4)",
+        "tonalRamp": [
+          "oklch(15.0% 0.050 170.4)",
+          "oklch(26.4% 0.050 170.4)",
+          "oklch(37.9% 0.050 170.4)",
+          "oklch(49.3% 0.050 170.4)",
+          "oklch(60.7% 0.050 170.4)",
+          "oklch(72.1% 0.050 170.4)",
+          "oklch(83.6% 0.050 170.4)",
+          "oklch(95.0% 0.050 170.4)"
+        ]
+      },
+      "rail-ink": {
+        "role": "primary",
+        "displayName": "Rail Ink",
+        "canonical": "#eaf1ed",
+        "oklch": "oklch(95.2% 0.009 161.3)",
+        "tonalRamp": [
+          "oklch(15.0% 0.009 161.3)",
+          "oklch(26.4% 0.009 161.3)",
+          "oklch(37.9% 0.009 161.3)",
+          "oklch(49.3% 0.009 161.3)",
+          "oklch(60.7% 0.009 161.3)",
+          "oklch(72.1% 0.009 161.3)",
+          "oklch(83.6% 0.009 161.3)",
+          "oklch(95.0% 0.009 161.3)"
+        ]
+      },
+      "rail-ink-2": {
+        "role": "primary",
+        "displayName": "Rail Ink Soft",
+        "canonical": "#a9c1b6",
+        "oklch": "oklch(79.0% 0.030 166.3)",
+        "tonalRamp": [
+          "oklch(15.0% 0.030 166.3)",
+          "oklch(26.4% 0.030 166.3)",
+          "oklch(37.9% 0.030 166.3)",
+          "oklch(49.3% 0.030 166.3)",
+          "oklch(60.7% 0.030 166.3)",
+          "oklch(72.1% 0.030 166.3)",
+          "oklch(83.6% 0.030 166.3)",
+          "oklch(95.0% 0.030 166.3)"
+        ]
+      },
+      "board": {
+        "role": "secondary",
+        "displayName": "Board Night",
+        "canonical": "#121c18",
+        "oklch": "oklch(21.5% 0.017 168.2)",
+        "tonalRamp": [
+          "oklch(15.0% 0.017 168.2)",
+          "oklch(26.4% 0.017 168.2)",
+          "oklch(37.9% 0.017 168.2)",
+          "oklch(49.3% 0.017 168.2)",
+          "oklch(60.7% 0.017 168.2)",
+          "oklch(72.1% 0.017 168.2)",
+          "oklch(83.6% 0.017 168.2)",
+          "oklch(95.0% 0.017 168.2)"
+        ]
+      },
+      "board-hover": {
+        "role": "secondary",
+        "displayName": "Board Hover",
+        "canonical": "#1b2823",
+        "oklch": "oklch(26.3% 0.020 169.1)",
+        "tonalRamp": [
+          "oklch(15.0% 0.020 169.1)",
+          "oklch(26.4% 0.020 169.1)",
+          "oklch(37.9% 0.020 169.1)",
+          "oklch(49.3% 0.020 169.1)",
+          "oklch(60.7% 0.020 169.1)",
+          "oklch(72.1% 0.020 169.1)",
+          "oklch(83.6% 0.020 169.1)",
+          "oklch(95.0% 0.020 169.1)"
+        ]
+      },
+      "board-rule": {
+        "role": "secondary",
+        "displayName": "Board Rule",
+        "canonical": "#2a3a33",
+        "oklch": "oklch(33.2% 0.024 166.3)",
+        "tonalRamp": [
+          "oklch(15.0% 0.024 166.3)",
+          "oklch(26.4% 0.024 166.3)",
+          "oklch(37.9% 0.024 166.3)",
+          "oklch(49.3% 0.024 166.3)",
+          "oklch(60.7% 0.024 166.3)",
+          "oklch(72.1% 0.024 166.3)",
+          "oklch(83.6% 0.024 166.3)",
+          "oklch(95.0% 0.024 166.3)"
+        ]
+      },
+      "board-ink": {
+        "role": "secondary",
+        "displayName": "Board Ink",
+        "canonical": "#e9f0eb",
+        "oklch": "oklch(94.8% 0.010 155.1)",
+        "tonalRamp": [
+          "oklch(15.0% 0.010 155.1)",
+          "oklch(26.4% 0.010 155.1)",
+          "oklch(37.9% 0.010 155.1)",
+          "oklch(49.3% 0.010 155.1)",
+          "oklch(60.7% 0.010 155.1)",
+          "oklch(72.1% 0.010 155.1)",
+          "oklch(83.6% 0.010 155.1)",
+          "oklch(95.0% 0.010 155.1)"
+        ]
+      },
+      "board-ink-2": {
+        "role": "secondary",
+        "displayName": "Board Ink Soft",
+        "canonical": "#a2b5ab",
+        "oklch": "oklch(75.6% 0.025 162.9)",
+        "tonalRamp": [
+          "oklch(15.0% 0.025 162.9)",
+          "oklch(26.4% 0.025 162.9)",
+          "oklch(37.9% 0.025 162.9)",
+          "oklch(49.3% 0.025 162.9)",
+          "oklch(60.7% 0.025 162.9)",
+          "oklch(72.1% 0.025 162.9)",
+          "oklch(83.6% 0.025 162.9)",
+          "oklch(95.0% 0.025 162.9)"
+        ]
+      },
+      "board-lamp-off": {
+        "role": "secondary",
+        "displayName": "Unlit Board Lamp",
+        "canonical": "#2b3b34",
+        "oklch": "oklch(33.6% 0.024 166.3)",
+        "tonalRamp": [
+          "oklch(15.0% 0.024 166.3)",
+          "oklch(26.4% 0.024 166.3)",
+          "oklch(37.9% 0.024 166.3)",
+          "oklch(49.3% 0.024 166.3)",
+          "oklch(60.7% 0.024 166.3)",
+          "oklch(72.1% 0.024 166.3)",
+          "oklch(83.6% 0.024 166.3)",
+          "oklch(95.0% 0.024 166.3)"
+        ]
+      },
+      "board-lamp-green": {
+        "role": "secondary",
+        "displayName": "Board Running Lamp",
+        "canonical": "#38c873",
+        "oklch": "oklch(73.8% 0.171 152.6)",
+        "tonalRamp": [
+          "oklch(15.0% 0.171 152.6)",
+          "oklch(26.4% 0.171 152.6)",
+          "oklch(37.9% 0.171 152.6)",
+          "oklch(49.3% 0.171 152.6)",
+          "oklch(60.7% 0.171 152.6)",
+          "oklch(72.1% 0.171 152.6)",
+          "oklch(83.6% 0.171 152.6)",
+          "oklch(95.0% 0.171 152.6)"
+        ]
+      },
+      "board-lamp-blue": {
+        "role": "secondary",
+        "displayName": "Board Queued Lamp",
+        "canonical": "#5592f0",
+        "oklch": "oklch(66.3% 0.154 258.8)",
+        "tonalRamp": [
+          "oklch(15.0% 0.154 258.8)",
+          "oklch(26.4% 0.154 258.8)",
+          "oklch(37.9% 0.154 258.8)",
+          "oklch(49.3% 0.154 258.8)",
+          "oklch(60.7% 0.154 258.8)",
+          "oklch(72.1% 0.154 258.8)",
+          "oklch(83.6% 0.154 258.8)",
+          "oklch(95.0% 0.154 258.8)"
+        ]
+      },
+      "board-red-face": {
+        "role": "secondary",
+        "displayName": "Line-Stop Red",
+        "canonical": "#c8352b",
+        "oklch": "oklch(55.3% 0.185 28.6)",
+        "tonalRamp": [
+          "oklch(15.0% 0.185 28.6)",
+          "oklch(26.4% 0.185 28.6)",
+          "oklch(37.9% 0.185 28.6)",
+          "oklch(49.3% 0.185 28.6)",
+          "oklch(60.7% 0.185 28.6)",
+          "oklch(72.1% 0.185 28.6)",
+          "oklch(83.6% 0.185 28.6)",
+          "oklch(95.0% 0.185 28.6)"
+        ]
+      },
+      "lit-green": {
+        "role": "secondary",
+        "displayName": "Lit Green",
+        "canonical": "#35c06e",
+        "oklch": "oklch(71.6% 0.167 152.6)",
+        "tonalRamp": [
+          "oklch(15.0% 0.167 152.6)",
+          "oklch(26.4% 0.167 152.6)",
+          "oklch(37.9% 0.167 152.6)",
+          "oklch(49.3% 0.167 152.6)",
+          "oklch(60.7% 0.167 152.6)",
+          "oklch(72.1% 0.167 152.6)",
+          "oklch(83.6% 0.167 152.6)",
+          "oklch(95.0% 0.167 152.6)"
+        ]
+      },
+      "focus-on-dark": {
+        "role": "secondary",
+        "displayName": "Amber Focus",
+        "canonical": "#f4bf4a",
+        "oklch": "oklch(83.2% 0.144 83.8)",
+        "tonalRamp": [
+          "oklch(15.0% 0.144 83.8)",
+          "oklch(26.4% 0.144 83.8)",
+          "oklch(37.9% 0.144 83.8)",
+          "oklch(49.3% 0.144 83.8)",
+          "oklch(60.7% 0.144 83.8)",
+          "oklch(72.1% 0.144 83.8)",
+          "oklch(83.6% 0.144 83.8)",
+          "oklch(95.0% 0.144 83.8)"
+        ]
+      },
+      "green": {
+        "role": "tertiary",
+        "displayName": "Running Green",
+        "canonical": "#1f9d52",
+        "oklch": "oklch(61.3% 0.153 151.4)",
+        "tonalRamp": [
+          "oklch(15.0% 0.153 151.4)",
+          "oklch(26.4% 0.153 151.4)",
+          "oklch(37.9% 0.153 151.4)",
+          "oklch(49.3% 0.153 151.4)",
+          "oklch(60.7% 0.153 151.4)",
+          "oklch(72.1% 0.153 151.4)",
+          "oklch(83.6% 0.153 151.4)",
+          "oklch(95.0% 0.153 151.4)"
+        ]
+      },
+      "green-ink": {
+        "role": "tertiary",
+        "displayName": "Running Green Ink",
+        "canonical": "#1a7240",
+        "oklch": "oklch(48.9% 0.113 153.3)",
+        "tonalRamp": [
+          "oklch(15.0% 0.113 153.3)",
+          "oklch(26.4% 0.113 153.3)",
+          "oklch(37.9% 0.113 153.3)",
+          "oklch(49.3% 0.113 153.3)",
+          "oklch(60.7% 0.113 153.3)",
+          "oklch(72.1% 0.113 153.3)",
+          "oklch(83.6% 0.113 153.3)",
+          "oklch(95.0% 0.113 153.3)"
+        ]
+      },
+      "yellow": {
+        "role": "tertiary",
+        "displayName": "Signal Yellow",
+        "canonical": "#f2a900",
+        "oklch": "oklch(78.5% 0.164 77.6)",
+        "tonalRamp": [
+          "oklch(15.0% 0.164 77.6)",
+          "oklch(26.4% 0.164 77.6)",
+          "oklch(37.9% 0.164 77.6)",
+          "oklch(49.3% 0.164 77.6)",
+          "oklch(60.7% 0.164 77.6)",
+          "oklch(72.1% 0.164 77.6)",
+          "oklch(83.6% 0.164 77.6)",
+          "oklch(95.0% 0.164 77.6)"
+        ]
+      },
+      "yellow-ink": {
+        "role": "tertiary",
+        "displayName": "Signal Yellow Ink",
+        "canonical": "#7a5000",
+        "oklch": "oklch(46.7% 0.099 74.3)",
+        "tonalRamp": [
+          "oklch(15.0% 0.099 74.3)",
+          "oklch(26.4% 0.099 74.3)",
+          "oklch(37.9% 0.099 74.3)",
+          "oklch(49.3% 0.099 74.3)",
+          "oklch(60.7% 0.099 74.3)",
+          "oklch(72.1% 0.099 74.3)",
+          "oklch(83.6% 0.099 74.3)",
+          "oklch(95.0% 0.099 74.3)"
+        ]
+      },
+      "yellow-wash": {
+        "role": "tertiary",
+        "displayName": "Signal Yellow Wash",
+        "canonical": "#fcf0d0",
+        "oklch": "oklch(95.6% 0.044 89.9)",
+        "tonalRamp": [
+          "oklch(15.0% 0.044 89.9)",
+          "oklch(26.4% 0.044 89.9)",
+          "oklch(37.9% 0.044 89.9)",
+          "oklch(49.3% 0.044 89.9)",
+          "oklch(60.7% 0.044 89.9)",
+          "oklch(72.1% 0.044 89.9)",
+          "oklch(83.6% 0.044 89.9)",
+          "oklch(95.0% 0.044 89.9)"
+        ]
+      },
+      "on-yellow": {
+        "role": "tertiary",
+        "displayName": "Lamp Black",
+        "canonical": "#1d1604",
+        "oklch": "oklch(20.4% 0.034 89.3)",
+        "tonalRamp": [
+          "oklch(15.0% 0.034 89.3)",
+          "oklch(26.4% 0.034 89.3)",
+          "oklch(37.9% 0.034 89.3)",
+          "oklch(49.3% 0.034 89.3)",
+          "oklch(60.7% 0.034 89.3)",
+          "oklch(72.1% 0.034 89.3)",
+          "oklch(83.6% 0.034 89.3)",
+          "oklch(95.0% 0.034 89.3)"
+        ]
+      },
+      "red": {
+        "role": "tertiary",
+        "displayName": "Stop Red",
+        "canonical": "#d63b30",
+        "oklch": "oklch(58.4% 0.194 28.6)",
+        "tonalRamp": [
+          "oklch(15.0% 0.194 28.6)",
+          "oklch(26.4% 0.194 28.6)",
+          "oklch(37.9% 0.194 28.6)",
+          "oklch(49.3% 0.194 28.6)",
+          "oklch(60.7% 0.194 28.6)",
+          "oklch(72.1% 0.194 28.6)",
+          "oklch(83.6% 0.194 28.6)",
+          "oklch(95.0% 0.194 28.6)"
+        ]
+      },
+      "red-ink": {
+        "role": "tertiary",
+        "displayName": "Stop Red Ink",
+        "canonical": "#ad2318",
+        "oklch": "oklch(48.7% 0.175 29.6)",
+        "tonalRamp": [
+          "oklch(15.0% 0.175 29.6)",
+          "oklch(26.4% 0.175 29.6)",
+          "oklch(37.9% 0.175 29.6)",
+          "oklch(49.3% 0.175 29.6)",
+          "oklch(60.7% 0.175 29.6)",
+          "oklch(72.1% 0.175 29.6)",
+          "oklch(83.6% 0.175 29.6)",
+          "oklch(95.0% 0.175 29.6)"
+        ]
+      },
+      "red-wash": {
+        "role": "tertiary",
+        "displayName": "Stop Red Wash",
+        "canonical": "#fae4e1",
+        "oklch": "oklch(93.6% 0.025 26.9)",
+        "tonalRamp": [
+          "oklch(15.0% 0.025 26.9)",
+          "oklch(26.4% 0.025 26.9)",
+          "oklch(37.9% 0.025 26.9)",
+          "oklch(49.3% 0.025 26.9)",
+          "oklch(60.7% 0.025 26.9)",
+          "oklch(72.1% 0.025 26.9)",
+          "oklch(83.6% 0.025 26.9)",
+          "oklch(95.0% 0.025 26.9)"
+        ]
+      },
+      "blue": {
+        "role": "tertiary",
+        "displayName": "Queue Blue",
+        "canonical": "#2f6fd0",
+        "oklch": "oklch(55.3% 0.164 258.8)",
+        "tonalRamp": [
+          "oklch(15.0% 0.164 258.8)",
+          "oklch(26.4% 0.164 258.8)",
+          "oklch(37.9% 0.164 258.8)",
+          "oklch(49.3% 0.164 258.8)",
+          "oklch(60.7% 0.164 258.8)",
+          "oklch(72.1% 0.164 258.8)",
+          "oklch(83.6% 0.164 258.8)",
+          "oklch(95.0% 0.164 258.8)"
+        ]
+      },
+      "blue-ink": {
+        "role": "tertiary",
+        "displayName": "Queue Blue Ink",
+        "canonical": "#1d5bb8",
+        "oklch": "oklch(48.7% 0.160 259.0)",
+        "tonalRamp": [
+          "oklch(15.0% 0.160 259.0)",
+          "oklch(26.4% 0.160 259.0)",
+          "oklch(37.9% 0.160 259.0)",
+          "oklch(49.3% 0.160 259.0)",
+          "oklch(60.7% 0.160 259.0)",
+          "oklch(72.1% 0.160 259.0)",
+          "oklch(83.6% 0.160 259.0)",
+          "oklch(95.0% 0.160 259.0)"
+        ]
+      },
+      "graphite": {
+        "role": "tertiary",
+        "displayName": "Graphite",
+        "canonical": "#5a655e",
+        "oklch": "oklch(49.5% 0.017 157.8)",
+        "tonalRamp": [
+          "oklch(15.0% 0.017 157.8)",
+          "oklch(26.4% 0.017 157.8)",
+          "oklch(37.9% 0.017 157.8)",
+          "oklch(49.3% 0.017 157.8)",
+          "oklch(60.7% 0.017 157.8)",
+          "oklch(72.1% 0.017 157.8)",
+          "oklch(83.6% 0.017 157.8)",
+          "oklch(95.0% 0.017 157.8)"
+        ]
+      },
+      "ground": {
+        "role": "neutral",
+        "displayName": "Shop Floor",
+        "canonical": "#e4e7e1",
+        "oklch": "oklch(92.4% 0.009 128.6)",
+        "tonalRamp": [
+          "oklch(15.0% 0.009 128.6)",
+          "oklch(26.4% 0.009 128.6)",
+          "oklch(37.9% 0.009 128.6)",
+          "oklch(49.3% 0.009 128.6)",
+          "oklch(60.7% 0.009 128.6)",
+          "oklch(72.1% 0.009 128.6)",
+          "oklch(83.6% 0.009 128.6)",
+          "oklch(95.0% 0.009 128.6)"
+        ]
+      },
+      "panel": {
+        "role": "neutral",
+        "displayName": "Work Panel",
+        "canonical": "#f9faf7",
+        "oklch": "oklch(98.4% 0.004 121.6)",
+        "tonalRamp": [
+          "oklch(15.0% 0.004 121.6)",
+          "oklch(26.4% 0.004 121.6)",
+          "oklch(37.9% 0.004 121.6)",
+          "oklch(49.3% 0.004 121.6)",
+          "oklch(60.7% 0.004 121.6)",
+          "oklch(72.1% 0.004 121.6)",
+          "oklch(83.6% 0.004 121.6)",
+          "oklch(95.0% 0.004 121.6)"
+        ]
+      },
+      "sunk": {
+        "role": "neutral",
+        "displayName": "Sunk",
+        "canonical": "#eef1ec",
+        "oklch": "oklch(95.4% 0.007 132.4)",
+        "tonalRamp": [
+          "oklch(15.0% 0.007 132.4)",
+          "oklch(26.4% 0.007 132.4)",
+          "oklch(37.9% 0.007 132.4)",
+          "oklch(49.3% 0.007 132.4)",
+          "oklch(60.7% 0.007 132.4)",
+          "oklch(72.1% 0.007 132.4)",
+          "oklch(83.6% 0.007 132.4)",
+          "oklch(95.0% 0.007 132.4)"
+        ]
+      },
+      "field": {
+        "role": "neutral",
+        "displayName": "Field White",
+        "canonical": "#ffffff",
+        "oklch": "oklch(100.0% 0.000 0)",
+        "tonalRamp": [
+          "oklch(15.0% 0.000 0)",
+          "oklch(26.4% 0.000 0)",
+          "oklch(37.9% 0.000 0)",
+          "oklch(49.3% 0.000 0)",
+          "oklch(60.7% 0.000 0)",
+          "oklch(72.1% 0.000 0)",
+          "oklch(83.6% 0.000 0)",
+          "oklch(95.0% 0.000 0)"
+        ]
+      },
+      "rule": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "#ccd2c9",
+        "oklch": "oklch(85.7% 0.014 134.9)",
+        "tonalRamp": [
+          "oklch(15.0% 0.014 134.9)",
+          "oklch(26.4% 0.014 134.9)",
+          "oklch(37.9% 0.014 134.9)",
+          "oklch(49.3% 0.014 134.9)",
+          "oklch(60.7% 0.014 134.9)",
+          "oklch(72.1% 0.014 134.9)",
+          "oklch(83.6% 0.014 134.9)",
+          "oklch(95.0% 0.014 134.9)"
+        ]
+      },
+      "rule-strong": {
+        "role": "neutral",
+        "displayName": "Strong Rule",
+        "canonical": "#a6aea3",
+        "oklch": "oklch(74.1% 0.018 137.0)",
+        "tonalRamp": [
+          "oklch(15.0% 0.018 137.0)",
+          "oklch(26.4% 0.018 137.0)",
+          "oklch(37.9% 0.018 137.0)",
+          "oklch(49.3% 0.018 137.0)",
+          "oklch(60.7% 0.018 137.0)",
+          "oklch(72.1% 0.018 137.0)",
+          "oklch(83.6% 0.018 137.0)",
+          "oklch(95.0% 0.018 137.0)"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "#18201c",
+        "oklch": "oklch(23.4% 0.014 163.5)",
+        "tonalRamp": [
+          "oklch(15.0% 0.014 163.5)",
+          "oklch(26.4% 0.014 163.5)",
+          "oklch(37.9% 0.014 163.5)",
+          "oklch(49.3% 0.014 163.5)",
+          "oklch(60.7% 0.014 163.5)",
+          "oklch(72.1% 0.014 163.5)",
+          "oklch(83.6% 0.014 163.5)",
+          "oklch(95.0% 0.014 163.5)"
+        ]
+      },
+      "ink-2": {
+        "role": "neutral",
+        "displayName": "Ink Soft",
+        "canonical": "#47524b",
+        "oklch": "oklch(42.7% 0.018 157.6)",
+        "tonalRamp": [
+          "oklch(15.0% 0.018 157.6)",
+          "oklch(26.4% 0.018 157.6)",
+          "oklch(37.9% 0.018 157.6)",
+          "oklch(49.3% 0.018 157.6)",
+          "oklch(60.7% 0.018 157.6)",
+          "oklch(72.1% 0.018 157.6)",
+          "oklch(83.6% 0.018 157.6)",
+          "oklch(95.0% 0.018 157.6)"
+        ]
+      },
+      "ink-3": {
+        "role": "neutral",
+        "displayName": "Ink Faint",
+        "canonical": "#5f6a63",
+        "oklch": "oklch(51.3% 0.017 157.8)",
+        "tonalRamp": [
+          "oklch(15.0% 0.017 157.8)",
+          "oklch(26.4% 0.017 157.8)",
+          "oklch(37.9% 0.017 157.8)",
+          "oklch(49.3% 0.017 157.8)",
+          "oklch(60.7% 0.017 157.8)",
+          "oklch(72.1% 0.017 157.8)",
+          "oklch(83.6% 0.017 157.8)",
+          "oklch(95.0% 0.017 157.8)"
+        ]
+      },
+      "select": {
+        "role": "neutral",
+        "displayName": "Selected Row",
+        "canonical": "#dce8e1",
+        "oklch": "oklch(92.0% 0.016 160.6)",
+        "tonalRamp": [
+          "oklch(15.0% 0.016 160.6)",
+          "oklch(26.4% 0.016 160.6)",
+          "oklch(37.9% 0.016 160.6)",
+          "oklch(49.3% 0.016 160.6)",
+          "oklch(60.7% 0.016 160.6)",
+          "oklch(72.1% 0.016 160.6)",
+          "oklch(83.6% 0.016 160.6)",
+          "oklch(95.0% 0.016 160.6)"
+        ]
+      },
+      "focus": {
+        "role": "neutral",
+        "displayName": "Focus Blue",
+        "canonical": "#1d5bb8",
+        "oklch": "oklch(48.7% 0.160 259.0)",
+        "tonalRamp": [
+          "oklch(15.0% 0.160 259.0)",
+          "oklch(26.4% 0.160 259.0)",
+          "oklch(37.9% 0.160 259.0)",
+          "oklch(49.3% 0.160 259.0)",
+          "oklch(60.7% 0.160 259.0)",
+          "oklch(72.1% 0.160 259.0)",
+          "oklch(83.6% 0.160 259.0)",
+          "oklch(95.0% 0.160 259.0)"
+        ]
+      }
+    },
+    "darkScheme": {
+      "trigger": "prefers-color-scheme: dark",
+      "note": "Light is the designed default. Unlisted tokens keep their light value; the approve button text turns #08180f in dark. Board-lit literals (board-lamp-*, board-red-face, lit-green, focus-on-dark, on-yellow) are scheme-independent.",
+      "colors": {
+        "ground": "#0f1613",
+        "panel": "#161f1b",
+        "sunk": "#1c2621",
+        "field": "#111915",
+        "rule": "#29362f",
+        "rule-strong": "#3d4c45",
+        "ink": "#e3eae6",
+        "ink-2": "#acbab2",
+        "ink-3": "#909e96",
+        "select": "#213129",
+        "rail": "#0f221c",
+        "rail-hover": "#173028",
+        "rail-active": "#1f3d33",
+        "board": "#0a110e",
+        "board-hover": "#121d18",
+        "board-rule": "#22302a",
+        "primary": "#2f6b58",
+        "primary-hover": "#3a7d68",
+        "focus": "#7aa9f2",
+        "green": "#2fb565",
+        "green-ink": "#62d091",
+        "yellow-ink": "#f4bf4a",
+        "yellow-wash": "#352a0f",
+        "red": "#e04a3f",
+        "red-ink": "#f58377",
+        "red-wash": "#3a1b18",
+        "blue": "#4a86e6",
+        "blue-ink": "#86b2f4",
+        "graphite": "#8b9991"
+      },
+      "shadow": "0 12px 30px -8px rgb(0 0 0 / 60%), 0 2px 6px rgb(0 0 0 / 35%)"
+    },
+    "typographyMeta": {
+      "wordmark": {
+        "displayName": "Wordmark",
+        "purpose": "\"Orchestrator\" beside the andon-tower mark in the rail."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Page titles only; 1.55rem under 900px."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Panel headings."
+      },
+      "title-sm": {
+        "displayName": "Title Small",
+        "purpose": "Headings inside a panel (diagnosis, inspector sub-blocks)."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "All running text; root size 15px; tabular figures throughout."
+      },
+      "body-sm": {
+        "displayName": "Body Small",
+        "purpose": "Meta lines, details, hints, legends."
+      },
+      "button": {
+        "displayName": "Button",
+        "purpose": "Buttons and tabs; 0.87rem on small buttons."
+      },
+      "label-board": {
+        "displayName": "Board Label",
+        "purpose": "Andon board cell names, two-line clamp."
+      },
+      "label-head": {
+        "displayName": "Table Head",
+        "purpose": "Uppercase table column heads; DAG stage labels at 0.76rem."
+      },
+      "figure": {
+        "displayName": "Figure",
+        "purpose": "Stat figures on the Workers page."
+      },
+      "figure-sm": {
+        "displayName": "Figure Small",
+        "purpose": "Figures under charts on Overview."
+      },
+      "mono": {
+        "displayName": "Mono",
+        "purpose": "IDs, worker names, feed timestamps, logs, JSON, definitions."
+      }
+    },
+    "fontSources": [
+      {
+        "family": "Barlow",
+        "weights": [
+          400,
+          500,
+          600,
+          700
+        ],
+        "source": "@fontsource/barlow (latin), self-hosted via web/angular.json"
+      },
+      {
+        "family": "Barlow Semi Condensed",
+        "weights": [
+          500,
+          600
+        ],
+        "source": "@fontsource/barlow-semi-condensed (latin)"
+      },
+      {
+        "family": "JetBrains Mono",
+        "weights": [
+          400
+        ],
+        "source": "@fontsource/jetbrains-mono (latin)"
+      }
+    ],
+    "icons": {
+      "library": "Lucide",
+      "version": "1.49.0",
+      "strokeWidth": 1.85,
+      "size": "1em",
+      "color": "currentColor"
+    },
+    "shadows": [
+      {
+        "name": "float",
+        "value": "0 10px 28px -8px rgb(14 26 20 / 26%), 0 2px 6px rgb(14 26 20 / 10%)",
+        "purpose": "Settings dialog and toasts only; panels and the board stay flat."
+      },
+      {
+        "name": "backdrop",
+        "value": "rgb(10 18 14 / 55%)",
+        "purpose": "Dialog backdrop dimming the floor."
+      },
+      {
+        "name": "lamp-edge",
+        "value": "inset 0 0 0 1.5px var(--edge)",
+        "purpose": "Outline of an unlit, paused or skipped lamp; an outline, not elevation."
+      },
+      {
+        "name": "stopped-rule",
+        "value": "border-bottom: 3px solid #c8352b",
+        "purpose": "Red rule across the board foot when the line is stopped."
+      }
+    ],
+    "motion": [
+      {
+        "name": "hover",
+        "value": "0.15s",
+        "purpose": "Background, border and colour changes on buttons, chips, nav items."
+      },
+      {
+        "name": "lamp-change",
+        "value": "0.3s ease-out",
+        "purpose": "Lamp fill and DAG plate colour changes; progress bar width."
+      },
+      {
+        "name": "face-sweep",
+        "value": "0.45s cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "A board cell face filling yellow or red as its lamp comes on."
+      },
+      {
+        "name": "toast-in",
+        "value": "0.22s cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Toast rising 8px into place."
+      },
+      {
+        "name": "row-in",
+        "value": "0.2s ease-out",
+        "purpose": "New live-activity rows dropping in 3px."
+      },
+      {
+        "name": "lamp-pulse",
+        "value": "1.6s ease-in-out infinite (opacity 0.4 at midpoint)",
+        "purpose": "Running lamps on the line, the board and DAG nodes breathe."
+      },
+      {
+        "name": "lamp-call",
+        "value": "1.1s ease-in-out infinite (opacity 0.3 at midpoint)",
+        "purpose": "A gate awaiting a person calls faster."
+      },
+      {
+        "name": "conn-pulse",
+        "value": "2s ease-in-out infinite",
+        "purpose": "The Live connection mark."
+      },
+      {
+        "name": "edge-flow",
+        "value": "0.8s linear infinite (dash 5 4)",
+        "purpose": "DAG edge into a running step."
+      },
+      {
+        "name": "caret",
+        "value": "1s steps(2) infinite",
+        "purpose": "Live token stream caret."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "all animations and transitions collapse to 0.001ms",
+        "purpose": "prefers-reduced-motion: reduce."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "wide",
+        "value": "1200px",
+        "purpose": "Three-up rows drop to two; board wraps the line cell below."
+      },
+      {
+        "name": "detail",
+        "value": "1100px",
+        "purpose": "Run detail, I/O and editor go single column."
+      },
+      {
+        "name": "stack",
+        "value": "980px",
+        "purpose": "Overview top row and workflow rows stack."
+      },
+      {
+        "name": "rail-collapse",
+        "value": "900px",
+        "purpose": "Rail becomes a top bar; board un-sticks; 16px gutters."
+      },
+      {
+        "name": "phone",
+        "value": "640px",
+        "purpose": "Board cells form a two-column grid; nav icons over labels."
+      }
+    ],
+    "layout": {
+      "railWidth": "228px",
+      "boardMinHeight": "62px",
+      "contentPadding": "24px 32px 64px",
+      "contentMaxWidth": "1520px",
+      "gridGap": "16px",
+      "rootFontSize": "15px"
+    }
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Machine-green lead action: Start a workflow, Run, Save, Resume.",
+      "html": "<button class=\"ds-btn-primary\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1em\" height=\"1em\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.85\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z\"/></svg>Start a workflow</button>",
+      "css": ".ds-btn-primary{display:inline-flex;align-items:center;justify-content:center;gap:7px;height:34px;padding:0 13px;border:1px solid var(--rule-strong,#a6aea3);border-radius:3px;font:600 14px/1 Barlow, system-ui, -apple-system, 'Segoe UI', sans-serif;white-space:nowrap;cursor:pointer;transition:background-color .15s,border-color .15s,color .15s;background:var(--primary,#1d3a32);border-color:var(--primary,#1d3a32);color:var(--on-primary,#fff);} .ds-btn-primary:hover{background:var(--primary-hover,#2a5045);border-color:var(--primary-hover,#2a5045);} .ds-btn-primary:active{transform:translateY(1px);} .ds-btn-primary:focus-visible{outline:2px solid var(--focus,#1d5bb8);outline-offset:2px;}"
+    },
+    {
+      "name": "Default Button",
+      "kind": "button",
+      "refersTo": "button-default",
+      "description": "Panel-white secondary action with a strong-rule border: Review, Inspect, Pause, Skip step.",
+      "html": "<button class=\"ds-btn\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1em\" height=\"1em\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.85\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"14\" y=\"3\" width=\"5\" height=\"18\" rx=\"1\"/><rect x=\"5\" y=\"3\" width=\"5\" height=\"18\" rx=\"1\"/></svg>Pause</button>",
+      "css": ".ds-btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;height:34px;padding:0 13px;border:1px solid var(--rule-strong,#a6aea3);border-radius:3px;font:600 14px/1 Barlow, system-ui, -apple-system, 'Segoe UI', sans-serif;white-space:nowrap;cursor:pointer;transition:background-color .15s,border-color .15s,color .15s;background:var(--panel,#f9faf7);color:var(--ink,#18201c);} .ds-btn:hover{background:var(--sunk,#eef1ec);border-color:var(--ink-2,#47524b);} .ds-btn:active{transform:translateY(1px);} .ds-btn:focus-visible{outline:2px solid var(--focus,#1d5bb8);outline-offset:2px;}"
+    },
+    {
+      "name": "Approve Button",
+      "kind": "button",
+      "refersTo": "button-approve",
+      "description": "Gate verdict: green-ink fill, used only to approve an approval step.",
+      "html": "<button class=\"ds-btn-approve\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1em\" height=\"1em\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.85\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 6 9 17l-5-5\"/></svg>Approve</button>",
+      "css": ".ds-btn-approve{display:inline-flex;align-items:center;justify-content:center;gap:7px;height:34px;padding:0 13px;border:1px solid var(--rule-strong,#a6aea3);border-radius:3px;font:600 14px/1 Barlow, system-ui, -apple-system, 'Segoe UI', sans-serif;white-space:nowrap;cursor:pointer;transition:background-color .15s,border-color .15s,color .15s;background:var(--green-ink,#1a7240);border-color:var(--green-ink,#1a7240);color:#fff;} .ds-btn-approve:hover{background:color-mix(in srgb,var(--green-ink,#1a7240) 85%,#000);} .ds-btn-approve:active{transform:translateY(1px);} .ds-btn-approve:focus-visible{outline:2px solid var(--focus,#1d5bb8);outline-offset:2px;}"
+    },
+    {
+      "name": "Danger Outline Button",
+      "kind": "button",
+      "refersTo": "button-danger-outline",
+      "description": "Destructive or line-stopping action: Reject, Cancel run, Delete, Pause all execution.",
+      "html": "<button class=\"ds-btn-danger\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1em\" height=\"1em\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.85\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M18 6 6 18\"/><path d=\"m6 6 12 12\"/></svg>Reject</button>",
+      "css": ".ds-btn-danger{display:inline-flex;align-items:center;justify-content:center;gap:7px;height:34px;padding:0 13px;border:1px solid var(--rule-strong,#a6aea3);border-radius:3px;font:600 14px/1 Barlow, system-ui, -apple-system, 'Segoe UI', sans-serif;white-space:nowrap;cursor:pointer;transition:background-color .15s,border-color .15s,color .15s;background:var(--panel,#f9faf7);color:var(--red-ink,#ad2318);border-color:color-mix(in srgb,var(--red-ink,#ad2318) 55%,transparent);} .ds-btn-danger:hover{background:var(--red-wash,#fae4e1);border-color:var(--red-ink,#ad2318);} .ds-btn-danger:active{transform:translateY(1px);} .ds-btn-danger:focus-visible{outline:2px solid var(--focus,#1d5bb8);outline-offset:2px;}"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Labelled field on field white with a strong rule; focus is a flush 2px blue ring.",
+      "html": "<label class=\"ds-label\">Your name <small>Recorded in the audit log next to every override.</small><input class=\"ds-input\" placeholder=\"operator\"></label>",
+      "css": ".ds-label{display:flex;flex-direction:column;gap:5px;max-width:320px;font:600 13.5px Barlow, system-ui, -apple-system, 'Segoe UI', sans-serif;color:var(--ink,#18201c);} .ds-label small{font-weight:400;font-size:12.75px;color:var(--ink-2,#47524b);} .ds-input{height:36px;padding:8px 10px;background:var(--field,#fff);color:var(--ink,#18201c);border:1px solid var(--rule-strong,#a6aea3);border-radius:3px;font:400 14.5px/1.45 Barlow, system-ui, -apple-system, 'Segoe UI', sans-serif;} .ds-input::placeholder{color:var(--ink-3,#5f6a63);} .ds-input:hover{border-color:var(--ink-2,#47524b);} .ds-input:focus-visible{outline:2px solid var(--focus,#1d5bb8);outline-offset:0;border-color:var(--focus,#1d5bb8);}"
+    },
+    {
+      "name": "Rail Navigation",
+      "kind": "nav",
+      "refersTo": "nav-item",
+      "description": "Machine-green rail with drawn icons, live counts and an active item.",
+      "html": "<nav class=\"ds-rail\"><a class=\"ds-nav active\" href=\"#\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1em\" height=\"1em\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.85\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m12 14 4-4\"/><path d=\"M3.34 19a10 10 0 1 1 17.32 0\"/></svg>Overview<span class=\"ds-count attn\">2</span></a><a class=\"ds-nav\" href=\"#\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1em\" height=\"1em\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.85\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect width=\"8\" height=\"8\" x=\"3\" y=\"3\" rx=\"2\"/><path d=\"M7 11v4a2 2 0 0 0 2 2h4\"/><rect width=\"8\" height=\"8\" x=\"13\" y=\"13\" rx=\"2\"/></svg>Workflows</a><a class=\"ds-nav\" href=\"#\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1em\" height=\"1em\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.85\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M9 9.003a1 1 0 0 1 1.517-.859l4.997 2.997a1 1 0 0 1 0 1.718l-4.997 2.997A1 1 0 0 1 9 14.996z\"/><circle cx=\"12\" cy=\"12\" r=\"10\"/></svg>Runs<span class=\"ds-count live\">1</span></a><a class=\"ds-nav\" href=\"#\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1em\" height=\"1em\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.85\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M15 12h-5\"/><path d=\"M15 8h-5\"/><path d=\"M19 17V5a2 2 0 0 0-2-2H4\"/><path d=\"M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v1a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v2a1 1 0 0 0 1 1h3\"/></svg>Audit log</a></nav>",
+      "css": ".ds-rail{display:flex;flex-direction:column;gap:2px;width:228px;padding:16px 12px;background:var(--rail,#1d3a32);} .ds-nav{display:flex;align-items:center;gap:11px;padding:8px 10px;border-radius:3px;color:var(--rail-ink-2,#a9c1b6);font:500 15px Barlow, system-ui, -apple-system, 'Segoe UI', sans-serif;text-decoration:none;transition:background-color .15s,color .15s;} .ds-nav svg{font-size:17px;flex:none;} .ds-nav:hover{background:var(--rail-hover,#26473e);color:var(--rail-ink,#eaf1ed);} .ds-nav.active{background:var(--rail-active,#2f5649);color:#fff;font-weight:600;} .ds-nav:focus-visible{outline:2px solid #f4bf4a;outline-offset:2px;} .ds-count{margin-left:auto;padding:2px 7px;border-radius:2px;font:600 12px/1.25 'Barlow Semi Condensed', Barlow, system-ui, sans-serif;background:rgb(255 255 255 / 9%);color:var(--rail-ink,#eaf1ed);} .ds-count.live{background:#35c06e;color:#0b2015;} .ds-count.attn{background:var(--yellow,#f2a900);color:#1d1604;}"
+    },
+    {
+      "name": "Andon Board",
+      "kind": "custom",
+      "refersTo": "board-cell",
+      "description": "Signature band: one cell per workflow; a cell that needs a person lights its whole face; a stopped line adds a red rule.",
+      "html": "<div class=\"ds-board\"><a class=\"ds-cell wait\" href=\"#\"><i class=\"ds-blamp\"></i><span class=\"ds-ctext\"><span class=\"ds-cname\">AI Content Pipeline</span><span class=\"ds-csub\">1 awaiting approval</span></span></a><a class=\"ds-cell run\" href=\"#\"><i class=\"ds-blamp\"></i><span class=\"ds-ctext\"><span class=\"ds-cname\">Batch Enrichment</span><span class=\"ds-csub\">3 running</span></span></a><a class=\"ds-cell\" href=\"#\"><i class=\"ds-blamp\"></i><span class=\"ds-ctext\"><span class=\"ds-cname\">Support Ticket Triage</span><span class=\"ds-csub\">Idle · last run 2m ago</span></span></a><a class=\"ds-cell fail\" href=\"#\"><i class=\"ds-blamp\"></i><span class=\"ds-ctext\"><span class=\"ds-cname\">Website Health Check</span><span class=\"ds-csub\">Last run failed · 19m ago</span></span></a><div class=\"ds-cell ds-line\"><span class=\"ds-ctext\"><span class=\"ds-cname\">Queue</span><span class=\"ds-figs\"><span><b>0</b>waiting</span><span><b>3</b>running</span><span><b>3/4</b>slots</span></span></span><button class=\"ds-bbtn\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1em\" height=\"1em\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.85\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"14\" y=\"3\" width=\"5\" height=\"18\" rx=\"1\"/><rect x=\"5\" y=\"3\" width=\"5\" height=\"18\" rx=\"1\"/></svg>Pause all</button></div></div>",
+      "css": ".ds-board{display:flex;align-items:stretch;min-height:62px;background:var(--board,#121c18);color:var(--board-ink,#e9f0eb);border-bottom:1px solid var(--board-rule,#2a3a33);overflow-x:auto;} .ds-board.stopped{border-bottom:3px solid #c8352b;} .ds-cell{display:flex;align-items:center;gap:11px;flex:1 1 0;min-width:150px;padding:10px 16px;color:var(--board-ink,#e9f0eb);text-decoration:none;border-right:1px solid var(--board-rule,#2a3a33);background-image:linear-gradient(var(--face,transparent),var(--face,transparent));background-repeat:no-repeat;background-size:0% 100%;transition:background-size .45s cubic-bezier(.16,1,.3,1),background-color .2s,color .3s ease-out;} a.ds-cell:hover{background-color:var(--board-hover,#1b2823);} a.ds-cell:focus-visible{outline:2px solid #f4bf4a;outline-offset:-2px;} .ds-blamp{flex:none;width:12px;height:12px;border-radius:2px;background:#2b3b34;box-shadow:inset 0 0 0 1px rgb(255 255 255 / 7%);} .ds-ctext{display:flex;flex-direction:column;min-width:0;} .ds-cname{font:600 13.8px/1.2 'Barlow Semi Condensed', Barlow, system-ui, sans-serif;letter-spacing:.02em;} .ds-csub{font:400 12.5px Barlow, system-ui, -apple-system, 'Segoe UI', sans-serif;color:var(--board-ink-2,#a2b5ab);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;} .ds-cell.run .ds-blamp{background:#38c873;animation:ds-pulse 1.6s ease-in-out infinite;} .ds-cell.wait{--face:var(--yellow,#f2a900);background-size:100% 100%;color:#1d1604;} .ds-cell.wait .ds-csub{color:#4b3600;} .ds-cell.wait .ds-blamp{background:#1d1604;box-shadow:none;animation:ds-call 1.1s ease-in-out infinite;} .ds-cell.fail{--face:#c8352b;background-size:100% 100%;color:#fff;} .ds-cell.fail .ds-csub{color:#fff;} .ds-cell.fail .ds-blamp{background:#fff;box-shadow:none;} .ds-line{flex:0 0 auto;gap:12px;border-right:0;border-left:1px solid var(--board-rule,#2a3a33);} .ds-figs{display:flex;gap:12px;margin-top:2px;font:400 11.4px Barlow, system-ui, -apple-system, 'Segoe UI', sans-serif;color:var(--board-ink-2,#a2b5ab);white-space:nowrap;} .ds-figs b{margin-right:4px;font:600 17px/1 'Barlow Semi Condensed', Barlow, system-ui, sans-serif;color:var(--board-ink,#e9f0eb);} .ds-bbtn{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 10px;border:1px solid #4c5f56;border-radius:3px;background:transparent;color:var(--board-ink,#e9f0eb);font:600 13px/1 Barlow, system-ui, -apple-system, 'Segoe UI', sans-serif;cursor:pointer;} .ds-bbtn:hover{background:var(--board-hover,#1b2823);border-color:#93a99e;} .ds-bbtn:focus-visible{outline:2px solid #f4bf4a;outline-offset:2px;} @keyframes ds-pulse{50%{opacity:.4}} @keyframes ds-call{50%{opacity:.3}} @media (prefers-reduced-motion:reduce){.ds-cell,.ds-blamp{animation:none!important;transition:none!important;}}"
+    },
+    {
+      "name": "Status Lamps and Station Row",
+      "kind": "custom",
+      "refersTo": "lamp",
+      "description": "Square 2px-cornered lamps: a badge per status, and a run drawn as a row of station lamps joined by rules.",
+      "html": "<div class=\"ds-lamps\"><div class=\"ds-badges\"><span class=\"ds-badge s-pending\"><i class=\"ds-lamp\"></i>Pending</span><span class=\"ds-badge s-queued\"><i class=\"ds-lamp\"></i>Queued</span><span class=\"ds-badge s-running\"><i class=\"ds-lamp\"></i>Running</span><span class=\"ds-badge s-waiting\"><i class=\"ds-lamp\"></i>Awaiting approval</span><span class=\"ds-badge s-succeeded\"><i class=\"ds-lamp\"></i>Succeeded</span><span class=\"ds-badge s-failed\"><i class=\"ds-lamp\"></i>Failed</span><span class=\"ds-badge s-skipped\"><i class=\"ds-lamp\"></i>Skipped</span><span class=\"ds-badge s-paused\"><i class=\"ds-lamp\"></i>Paused</span></div><ol class=\"ds-stations\" aria-label=\"Run stations\"><li class=\"s-succeeded\"><i class=\"ds-lamp\"></i></li><li class=\"s-succeeded\"><i class=\"ds-lamp\"></i></li><li class=\"s-succeeded\"><i class=\"ds-lamp\"></i></li><li class=\"s-waiting\"><i class=\"ds-lamp\"></i></li><li class=\"s-pending\"><i class=\"ds-lamp\"></i></li></ol></div>",
+      "css": ".ds-lamps{display:flex;flex-direction:column;gap:14px;font-family:Barlow, system-ui, -apple-system, 'Segoe UI', sans-serif;} .ds-badges{display:flex;flex-wrap:wrap;gap:6px 16px;} .ds-badge{display:inline-flex;align-items:center;gap:7px;font:600 13px Barlow, system-ui, -apple-system, 'Segoe UI', sans-serif;color:var(--c,var(--ink-2,#47524b));} .ds-lamp{display:inline-block;flex:none;width:9px;height:9px;border-radius:2px;background:var(--lamp,transparent);box-shadow:inset 0 0 0 1.5px var(--edge,transparent);} .s-pending{--c:var(--ink-3,#5f6a63);--lamp:transparent;--edge:var(--rule-strong,#a6aea3);} .s-queued{--c:var(--blue-ink,#1d5bb8);--lamp:var(--blue,#2f6fd0);} .s-running{--c:var(--green-ink,#1a7240);--lamp:var(--green,#1f9d52);} .s-waiting{--c:var(--yellow-ink,#7a5000);--lamp:var(--yellow,#f2a900);--edge:color-mix(in srgb,var(--yellow-ink,#7a5000) 40%,transparent);} .s-succeeded{--c:var(--ink-2,#47524b);--lamp:var(--graphite,#5a655e);} .s-failed{--c:var(--red-ink,#ad2318);--lamp:var(--red,#d63b30);} .s-paused{--c:var(--ink,#18201c);--lamp:transparent;--edge:var(--ink,#18201c);} .s-skipped{--c:var(--ink-3,#5f6a63);--edge:var(--rule-strong,#a6aea3);--lamp:repeating-linear-gradient(135deg,var(--rule-strong,#a6aea3) 0 1.5px,transparent 1.5px 4px);} .ds-stations{display:flex;align-items:center;list-style:none;margin:0;padding:0;} .ds-stations li{display:flex;align-items:center;} .ds-stations li+li::before{content:'';width:12px;height:1.5px;margin:0 3px;background:var(--rule-strong,#a6aea3);} .ds-stations .ds-lamp{width:14px;height:14px;} .ds-stations .s-running .ds-lamp{animation:ds-pulse 1.6s ease-in-out infinite;} .ds-stations .s-waiting .ds-lamp{animation:ds-call 1.1s ease-in-out infinite;} @keyframes ds-pulse{50%{opacity:.4}} @keyframes ds-call{50%{opacity:.3}} @media (prefers-reduced-motion:reduce){.ds-stations .ds-lamp{animation:none!important;}}"
+    },
+    {
+      "name": "Panel with Table",
+      "kind": "card",
+      "refersTo": "panel",
+      "description": "Flat paper panel, hairline-ruled, 3px corners; flush tables with condensed uppercase heads.",
+      "html": "<section class=\"ds-panel\"><header class=\"ds-phead\"><h2>Workflows</h2><span class=\"ds-pmeta\">Run starts immediately with the example input</span></header><table class=\"ds-table\"><thead><tr><th>Workflow</th><th>State</th><th class=\"num\">Runs</th></tr></thead><tbody><tr><td><a href=\"#\">AI Content Pipeline</a></td><td><span class=\"ds-st w\"><i></i>Awaiting approval</span></td><td class=\"num\">5</td></tr><tr><td><a href=\"#\">Website Health Check</a></td><td><span class=\"ds-st f\"><i></i>Last run failed</span></td><td class=\"num\">1</td></tr></tbody></table></section>",
+      "css": ".ds-panel{background:var(--panel,#f9faf7);border:1px solid var(--rule,#ccd2c9);border-radius:3px;overflow:hidden;color:var(--ink,#18201c);font:400 15px/1.5 Barlow, system-ui, -apple-system, 'Segoe UI', sans-serif;font-variant-numeric:tabular-nums;} .ds-phead{display:flex;justify-content:space-between;align-items:center;gap:8px 12px;flex-wrap:wrap;padding:14px 18px 12px;} .ds-phead h2{margin:0;font:600 16px/1.3 Barlow, system-ui, -apple-system, 'Segoe UI', sans-serif;} .ds-pmeta{font-size:13px;color:var(--ink-2,#47524b);} .ds-table{width:100%;border-collapse:collapse;font-size:14px;} .ds-table th{text-align:left;padding:9px 14px;background:var(--sunk,#eef1ec);border-bottom:1px solid var(--rule,#ccd2c9);font:600 12px/1.2 'Barlow Semi Condensed', Barlow, system-ui, sans-serif;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-2,#47524b);} .ds-table td{padding:10px 14px;border-bottom:1px solid var(--rule,#ccd2c9);} .ds-table tr:last-child td{border-bottom:0;} .ds-table tbody tr:hover td{background:var(--sunk,#eef1ec);} .ds-table .num{text-align:right;} .ds-table a{color:var(--ink,#18201c);font-weight:600;text-decoration:none;} .ds-table a:hover{text-decoration:underline;} .ds-table a:focus-visible{outline:2px solid var(--focus,#1d5bb8);outline-offset:2px;} .ds-st{display:inline-flex;align-items:center;gap:7px;font-weight:600;font-size:13px;} .ds-st i{width:9px;height:9px;border-radius:2px;} .ds-st.w{color:var(--yellow-ink,#7a5000);} .ds-st.w i{background:var(--yellow,#f2a900);} .ds-st.f{color:var(--red-ink,#ad2318);} .ds-st.f i{background:var(--red,#d63b30);}"
+    },
+    {
+      "name": "Chip and Segmented Filter",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Square chips and a single-strip segmented filter; active state fills machine green.",
+      "html": "<div class=\"ds-chips\"><div class=\"ds-seg\" role=\"group\"><button class=\"active\">All</button><button>Running</button><button>Awaiting approval</button><button>Failed</button></div><button class=\"ds-chip\">Triage inbound support email</button><button class=\"ds-chip active\">One workflow <svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1em\" height=\"1em\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.85\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M18 6 6 18\"/><path d=\"m6 6 12 12\"/></svg></button></div>",
+      "css": ".ds-chips{display:flex;flex-wrap:wrap;gap:10px 12px;align-items:center;} .ds-seg{display:inline-flex;border:1px solid var(--rule-strong,#a6aea3);border-radius:3px;background:var(--panel,#f9faf7);overflow:hidden;} .ds-seg button{padding:7px 14px;border:0;border-right:1px solid var(--rule,#ccd2c9);background:transparent;color:var(--ink-2,#47524b);font:600 13.5px Barlow, system-ui, -apple-system, 'Segoe UI', sans-serif;cursor:pointer;transition:background-color .15s,color .15s;} .ds-seg button:last-child{border-right:0;} .ds-seg button:hover{background:var(--sunk,#eef1ec);color:var(--ink,#18201c);} .ds-seg button.active{background:var(--primary,#1d3a32);color:var(--on-primary,#fff);} .ds-seg button:focus-visible{outline:2px solid var(--focus,#1d5bb8);outline-offset:2px;} .ds-chip{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border:1px solid var(--rule-strong,#a6aea3);border-radius:3px;background:var(--panel,#f9faf7);color:var(--ink-2,#47524b);font:500 13px/1.35 Barlow, system-ui, -apple-system, 'Segoe UI', sans-serif;cursor:pointer;transition:border-color .15s,color .15s;} .ds-chip:hover{color:var(--ink,#18201c);border-color:var(--ink-2,#47524b);} .ds-chip.active{background:var(--primary,#1d3a32);border-color:var(--primary,#1d3a32);color:var(--on-primary,#fff);} .ds-chip:focus-visible{outline:2px solid var(--focus,#1d5bb8);outline-offset:2px;}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Andon Line Board",
+    "overview": "Orchestrator is a production line. Workers pull work, a stuck station calls for help, and anyone can stop the line. The dashboard is the andon board hung over that line: a deep machine-green rail down the left, a near-black board band across the top, and below them a light shop-floor grey ground carrying paper-white work panels. Everything at rest is quiet. Colour comes on only where a station is running, waiting for a person, or broken, so the eye finds the problem before it reads a word.\n\nThe density is an operator's, not a brochure's: hairline-ruled tables, condensed board labels, tabular figures, step lamps in a row. Corners are nearly square, surfaces are flat, and depth comes from tone (ground, panel, sunk) instead of shadow. Motion is a lamp's: running lamps breathe, a gate waiting for a person blinks faster, and a board cell that needs you sweeps its whole face to yellow or red. Light is the designed default (a viewer on a laptop in daylight); a dark scheme follows the operating system and keeps every role.\n\nThe world was built to refuse the category default for AI dashboards: a navy ground with a purple accent and a grid of KPI cards.",
+    "keyCharacteristics": [
+      "Fixed frame on every screen: machine-green rail (228px) and the andon board band.",
+      "Lamp colours are reserved for state; finished work goes quiet graphite.",
+      "Square lamps (2px corners) are the system's atom: badges, station rows, board cells, DAG nodes, chart keys and toasts all use them.",
+      "Barlow for UI, Barlow Semi Condensed for board labels, table heads and figures, JetBrains Mono only for machine text.",
+      "Flat, hairline-ruled panels at 3px corners; shadows only on what floats over the floor."
+    ],
+    "rules": [
+      {
+        "name": "The Lamp Reservation Rule",
+        "body": "Green, yellow, red and blue mean state and nothing else. They never decorate and never fill a primary action. Two exceptions are part of the world: the wordmark's andon tower, the one place red, yellow and green stand together at rest, and the verdict actions (Approve fills with green ink; Reject, Cancel run, Delete and Pause all execution take a red-ink outline).",
+        "section": "colors"
+      },
+      {
+        "name": "The Quiet Finish Rule",
+        "body": "Green means moving now. Work that has finished goes graphite, never green, so a screen of completed runs reads calm and the one running station stands out.",
+        "section": "colors"
+      },
+      {
+        "name": "The Whole Face Rule",
+        "body": "A board cell that needs a person lights its entire face (Signal Yellow for a gate, Line-Stop Red for a failure); every other cell carries only a small lamp. Stopping the line is the loudest state on the board: a 3px red rule across the board's foot.",
+        "section": "colors"
+      },
+      {
+        "name": "The Condensed Voice Rule",
+        "body": "Barlow Semi Condensed speaks only for the board, table heads, figures, counts, tags and DAG sublabels. It never sets running text or a page title, and its uppercase form stays on column heads and DAG labels.",
+        "section": "typography"
+      },
+      {
+        "name": "The Machine Text Rule",
+        "body": "Mono is for what the machine wrote: IDs, timestamps, logs, JSON, definitions. A human-facing label never goes mono.",
+        "section": "typography"
+      },
+      {
+        "name": "The Frame Rule",
+        "body": "Rail and board are on every screen, and the board always shows every workflow plus the line cell. Pages add panels on the floor; they never replace the frame.",
+        "section": "layout"
+      },
+      {
+        "name": "The Flat Floor Rule",
+        "body": "Panels, tables, cards and the board never cast shadows. If something needs separation, give it a rule or a tone step; only a dialog or toast lifts.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Square Lamp Rule",
+        "body": "A lamp is a square with 2px corners: filled when lit, an inset 1.5px outline when unlit, hatched when skipped, a hollow ink outline when paused. Never a circle, never a dot, never a pill.",
+        "section": "shapes"
+      }
+    ],
+    "dos": [
+      "**Do** keep the rail and andon board on every screen, with every workflow represented as a board cell.",
+      "**Do** reserve green, yellow, red and blue for state (The Lamp Reservation Rule) and turn finished work graphite.",
+      "**Do** draw every status as a square lamp with 2px corners plus a label in the state's ink tone; never rely on colour alone.",
+      "**Do** use Machine Green (#1d3a32) for the primary action, and green-ink fill or red-ink outline only for verdicts and destructive actions.",
+      "**Do** keep panels flat, hairline-ruled and 3px-cornered on the Shop Floor ground; separate by tone and rules.",
+      "**Do** set figures, counts and table heads in Barlow Semi Condensed with tabular numerals, and put IDs, timestamps, logs and JSON in JetBrains Mono.",
+      "**Do** draw a state that spans a panel (approval gate, open run form) as a full-width band to the panel edges.",
+      "**Do** honour reduced motion: lamp breathing, face sweeps and edge flow all collapse to static."
+    ],
+    "donts": [
+      "**Don't** build the category default: a navy dashboard with a purple accent and a grid of KPI cards. Figures live inside the panel that owns them, next to the chart or control they explain.",
+      "**Don't** use a lamp colour as decoration or a primary-button fill; outside the wordmark's tower, a lamp hue always names a state.",
+      "**Don't** colour succeeded work green.",
+      "**Don't** use circles, dots or pills for lamps, counts or tags, or round anything past the dialog's 4px.",
+      "**Don't** add shadows to panels, tables or the board.",
+      "**Don't** lift the uppercase table-head style above page or panel titles as a kicker or eyebrow.",
+      "**Don't** set running text or page titles in the condensed face, or human labels in mono.",
+      "**Don't** mix icon families or use filled or glyph icons; Lucide line icons at 1.85 stroke only."
+    ]
+  }
+}

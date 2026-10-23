@@ -7,183 +7,216 @@ import { RealtimeService } from '../core/realtime.service';
 import { ToastService } from '../core/toast.service';
 import { DagView } from '../shared/dag-view';
 import { AgoPipe, DurationPipe, elapsed, PrettyJsonPipe, ShortIdPipe } from '../shared/format';
+import { Icon } from '../shared/icon';
 import { StatusBadge } from '../shared/status-badge';
 
 type Tab = 'output' | 'live' | 'logs' | 'config';
 
 @Component({
   selector: 'app-run-detail',
-  imports: [RouterLink, FormsModule, DagView, StatusBadge, AgoPipe, DurationPipe, PrettyJsonPipe, ShortIdPipe],
+  imports: [RouterLink, FormsModule, DagView, StatusBadge, Icon, AgoPipe, DurationPipe, PrettyJsonPipe, ShortIdPipe],
   template: `
     @if (run(); as run) {
+      <nav class="crumbs" aria-label="Breadcrumb"><a routerLink="/runs"><app-icon name="back" />Runs</a></nav>
       <div class="page-head">
         <div>
-          <a routerLink="/runs" class="muted small">← Runs</a>
-          <h1>{{ run.workflowName }} <span class="mono muted">#{{ run.id | short }}</span></h1>
-          <p class="muted">
-            <app-status [status]="run.status" />
-            · {{ run.trigger }} · v{{ run.workflowVersion }} · started {{ run.startedAt | ago: tick() }}
-            · {{ runDuration() | duration }}
-            · <a [routerLink]="['/workflows', run.workflowId]">workflow</a>
+          <h1>{{ run.workflowName }} <span class="mono id">#{{ run.id | short }}</span></h1>
+          <p class="run-meta">
+            <app-status [status]="waiting().length && run.status === 'running' ? 'waiting_approval' : run.status" />
+            <span>{{ run.trigger }} trigger</span>
+            <span>v{{ run.workflowVersion }}</span>
+            <span>Started {{ run.startedAt | ago: tick() }}</span>
+            <span class="num">{{ runDuration() | duration }} elapsed</span>
+            <a [routerLink]="['/workflows', run.workflowId]">Workflow definition</a>
           </p>
         </div>
         <div class="actions">
           @if (run.status === 'running') {
-            <button class="btn ghost" (click)="runAction('pause')" title="Finish running steps, start nothing new">⏸ Pause</button>
+            <button class="btn" (click)="runAction('pause')" title="Finish running steps, start nothing new"><app-icon name="pause" />Pause</button>
           }
           @if (run.status === 'paused') {
-            <button class="btn success" (click)="runAction('resume')">▶ Resume</button>
+            <button class="btn primary" (click)="runAction('resume')"><app-icon name="play" />Resume</button>
           }
           @if (run.status === 'running' || run.status === 'paused') {
-            <button class="btn danger-ghost" (click)="runAction('cancel')">✕ Cancel run</button>
+            <button class="btn danger-outline" (click)="runAction('cancel')"><app-icon name="stop" />Cancel run</button>
           }
           @if (run.status === 'failed' || run.status === 'cancelled') {
-            <button class="btn primary" (click)="runAction('retry')">↻ Retry failed steps</button>
+            <button class="btn primary" (click)="runAction('retry')"><app-icon name="retry" />Retry failed steps</button>
           }
         </div>
       </div>
 
       @if (run.error && run.status !== 'succeeded') {
-        <div class="banner danger">{{ run.error }}</div>
+        <div class="notice s-failed" role="alert"><app-icon name="alert" /><span>{{ run.error }}</span></div>
       }
       @if (waiting().length) {
-        <div class="banner attn">
-          ✋ {{ waiting().length }} step{{ waiting().length > 1 ? 's' : '' }} waiting for approval:
+        <div class="notice s-waiting_approval">
+          <app-icon name="approval" />
+          <span>{{ waiting().length }} step{{ waiting().length > 1 ? 's are' : ' is' }} waiting for your approval:</span>
           @for (t of waiting(); track t.id) {
             <button class="link" (click)="pick(t.stepId)">{{ t.name }}</button>
           }
         </div>
       }
 
-      <div class="card">
-        <div class="card-head">
-          <h2>Execution graph</h2>
-          <div class="legend small">
+      <section class="panel" aria-labelledby="graph-title">
+        <header class="panel-head">
+          <h2 id="graph-title">Execution graph</h2>
+          <ul class="legend" aria-label="Legend">
             @for (s of legend; track s) {
-              <span><i class="dot" [class]="'dot d-' + s"></i>{{ s === 'waiting_approval' ? 'approval' : s }}</span>
+              <li><app-status [status]="s" /></li>
             }
-          </div>
-        </div>
+          </ul>
+        </header>
         <app-dag [steps]="run.definition.steps" [statuses]="statusMap()" [selected]="selected()" (select)="pick($event)" />
-      </div>
+      </section>
 
       <div class="detail-grid">
-        <div class="card flush">
-          <table class="table">
-            <thead><tr><th>Step</th><th>Status</th><th>Try</th><th>Worker</th><th>Duration</th></tr></thead>
-            <tbody>
-              @for (t of orderedTasks(); track t.id) {
-                <tr class="clickable" [class.row-selected]="t.stepId === selected()" (click)="pick(t.stepId)">
-                  <td><b>{{ t.name }}</b><span class="muted small step-type">{{ t.type }}</span></td>
-                  <td><app-status [status]="t.status" /></td>
-                  <td class="mono small">{{ t.attempt || '-' }}</td>
-                  <td class="mono small muted">{{ t.workerId ?? '-' }}</td>
-                  <td class="mono small">{{ taskDuration(t) | duration }}</td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
+        <section class="panel flush" aria-label="Steps">
+          <div class="table-wrap">
+            <table class="table">
+              <thead><tr><th>Step</th><th>Status</th><th class="hide-sm">Worker</th><th class="num">Duration</th></tr></thead>
+              <tbody>
+                @for (t of orderedTasks(); track t.id) {
+                  <tr class="clickable" [class.row-selected]="t.stepId === selected()" (click)="pick(t.stepId)">
+                    <td>
+                      <button class="row-pick" (click)="pick(t.stepId); $event.stopPropagation()" [attr.aria-pressed]="t.stepId === selected()">
+                        <app-icon [name]="t.type" /><span class="strong">{{ t.name }}</span>
+                      </button>
+                    </td>
+                    <td>
+                      <app-status [status]="t.status" />
+                      @if (t.attempt > 1) {
+                        <span class="muted small"> · try {{ t.attempt }}</span>
+                      }
+                    </td>
+                    <td class="mono small muted hide-sm">{{ t.workerId ?? '–' }}</td>
+                    <td class="num small">{{ taskDuration(t) | duration }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </section>
 
-        <div class="card task-panel">
+        <section class="panel inspector" aria-label="Step inspector">
           @if (selectedTask(); as t) {
-            <div class="card-head">
-              <h2>{{ t.name }}</h2>
+            <header class="panel-head">
+              <h2><app-icon [name]="t.type" />{{ t.name }}</h2>
               <app-status [status]="t.status" />
-            </div>
+            </header>
             <dl class="meta">
               <div><dt>Step id</dt><dd class="mono">{{ t.stepId }}</dd></div>
               <div><dt>Type</dt><dd>{{ t.type }}</dd></div>
-              <div><dt>Attempt</dt><dd>{{ t.attempt }} · {{ t.retriesLeft }} retries left</dd></div>
-              <div><dt>Worker</dt><dd class="mono">{{ t.workerId ?? '-' }}</dd></div>
+              <div><dt>Attempt</dt><dd>{{ t.attempt }} · {{ t.retriesLeft }} {{ t.retriesLeft === 1 ? 'retry' : 'retries' }} left</dd></div>
+              <div><dt>Worker</dt><dd class="mono">{{ t.workerId ?? '–' }}</dd></div>
               <div><dt>Queued</dt><dd>{{ t.queuedAt | ago: tick() }}</dd></div>
-              <div><dt>Duration</dt><dd>{{ taskDuration(t) | duration }}</dd></div>
+              <div><dt>Duration</dt><dd class="num">{{ taskDuration(t) | duration }}</dd></div>
             </dl>
-
-            <div class="actions wrap">
-              @if (t.status === 'failed' || t.status === 'cancelled') {
-                <button class="btn primary sm" (click)="taskAction(t, 'retry')">↻ Retry step</button>
-              }
-              @if (canSkip(t.status)) {
-                <button class="btn ghost sm" (click)="taskAction(t, 'skip')" title="Mark as skipped and continue downstream">⤼ Skip step</button>
-              }
-              @if (t.status === 'failed') {
-                <button class="btn ai sm" [disabled]="diagnosing()" (click)="diagnose(t)">{{ diagnosing() ? 'Asking Claude…' : '✦ Ask Claude why' }}</button>
-              }
-            </div>
 
             @if (t.status === 'waiting_approval') {
               <div class="approval">
-                <div><b>Approval required:</b> {{ approvalMessage(t) }}</div>
-                <textarea rows="2" [(ngModel)]="comment" placeholder="Comment (optional, recorded in the audit log)"></textarea>
+                <p><strong>Approval required.</strong> {{ approvalMessage(t) }}</p>
+                <label class="sr-only" for="approval-comment">Comment</label>
+                <textarea id="approval-comment" rows="2" [(ngModel)]="comment" placeholder="Comment (optional, recorded in the audit log)"></textarea>
                 <div class="actions">
-                  <button class="btn success sm" (click)="taskAction(t, 'approve')">✓ Approve</button>
-                  <button class="btn danger sm" (click)="taskAction(t, 'reject')">✕ Reject</button>
+                  <button class="btn approve" (click)="taskAction(t, 'approve')"><app-icon name="approve" />Approve</button>
+                  <button class="btn danger-outline" (click)="taskAction(t, 'reject')"><app-icon name="cancel" />Reject</button>
                 </div>
               </div>
             }
+
+            @if (t.status === 'failed' || t.status === 'cancelled' || canSkip(t.status)) {
+              <div class="actions step-actions">
+                @if (t.status === 'failed' || t.status === 'cancelled') {
+                  <button class="btn sm primary" (click)="taskAction(t, 'retry')"><app-icon name="retry" />Retry step</button>
+                }
+                @if (canSkip(t.status)) {
+                  <button class="btn sm" (click)="taskAction(t, 'skip')" title="Mark as skipped and continue downstream"><app-icon name="skip" />Skip step</button>
+                }
+                @if (t.status === 'failed') {
+                  <button class="btn sm" [disabled]="diagnosing()" (click)="diagnose(t)"><app-icon name="diagnose" />{{ diagnosing() ? 'Asking Claude…' : 'Ask Claude why' }}</button>
+                }
+              </div>
+            }
             @if (t.error && t.status !== 'succeeded') {
-              <div class="error-box">{{ t.error }}</div>
+              <pre class="error-box">{{ t.error }}</pre>
             }
             @if (diagnosis()[t.id]; as d) {
-              <div class="ai-box"><div class="ai-box-head">✦ Claude's diagnosis</div><pre>{{ d }}</pre></div>
+              <div class="diagnosis"><h3><app-icon name="diagnose" />Claude's diagnosis</h3><p>{{ d }}</p></div>
             }
 
-            <div class="tabs">
+            <div class="tabs" role="tablist" aria-label="Step details">
               @for (tab of tabs; track tab) {
-                <button [class.active]="activeTab() === tab" (click)="activeTab.set(tab)">
-                  {{ tab }}{{ tab === 'logs' ? ' (' + taskLogs().length + ')' : '' }}{{ tab === 'live' && t.status === 'running' ? ' ●' : '' }}
+                <button role="tab" [attr.aria-selected]="activeTab() === tab" [class.active]="activeTab() === tab" (click)="activeTab.set(tab)">
+                  {{ tabLabel(tab) }}
+                  @if (tab === 'logs') {
+                    <span class="count">{{ taskLogs().length }}</span>
+                  }
+                  @if (tab === 'live' && t.status === 'running') {
+                    <i class="lamp live-lamp" aria-label="streaming"></i>
+                  }
                 </button>
               }
             </div>
-            @switch (activeTab()) {
-              @case ('output') {
-                @if (t.output !== null && t.output !== undefined) {
-                  @if (outputText(t); as text) {
-                    <pre class="output prose">{{ text }}</pre>
+            <div role="tabpanel">
+              @switch (activeTab()) {
+                @case ('output') {
+                  @if (t.output !== null && t.output !== undefined) {
+                    @if (outputText(t); as text) {
+                      <pre class="output prose">{{ text }}</pre>
+                    }
+                    <pre class="output">{{ t.output | json2 }}</pre>
+                  } @else {
+                    <p class="empty small">No output yet. It appears here when the step finishes.</p>
                   }
-                  <pre class="output">{{ t.output | json2 }}</pre>
-                } @else {
-                  <div class="empty small">No output yet.</div>
+                }
+                @case ('live') {
+                  @if (streams()[t.id]) {
+                    <pre class="output prose live">{{ streams()[t.id] }}@if (t.status === 'running') {<span class="caret">▍</span>}</pre>
+                  } @else {
+                    <p class="empty small">{{ t.status === 'running' ? 'Waiting for the first tokens…' : 'While an LLM step runs, its tokens stream in here in real time.' }}</p>
+                  }
+                }
+                @case ('logs') {
+                  <div class="logs">
+                    @for (l of taskLogs(); track l.id) {
+                      <div class="log" [class]="'log log-' + l.level"><span class="mono">{{ l.createdAt.slice(11, 23) }}</span> {{ l.message }}</div>
+                    } @empty {
+                      <p class="empty small">No logs yet.</p>
+                    }
+                  </div>
+                }
+                @case ('config') {
+                  <pre class="output">{{ stepConfig(t.stepId) | json2 }}</pre>
                 }
               }
-              @case ('live') {
-                @if (streams()[t.id]) {
-                  <pre class="output prose live">{{ streams()[t.id] }}@if (t.status === 'running') {<span class="caret">▍</span>}</pre>
-                } @else {
-                  <div class="empty small">{{ t.status === 'running' ? 'Waiting for output…' : 'Live output appears here while the step runs (LLM tokens stream in real time).' }}</div>
-                }
-              }
-              @case ('logs') {
-                <div class="logs">
-                  @for (l of taskLogs(); track l.id) {
-                    <div class="log" [class]="'log log-' + l.level"><span class="mono">{{ l.createdAt.slice(11, 23) }}</span> {{ l.message }}</div>
-                  } @empty {
-                    <div class="empty small">No logs yet.</div>
-                  }
-                </div>
-              }
-              @case ('config') {
-                <pre class="output">{{ stepConfig(t.stepId) | json2 }}</pre>
-              }
-            }
+            </div>
           } @else {
-            <div class="empty">Select a step in the graph or table to inspect and override it.</div>
+            <p class="empty">Select a step in the graph or the table to inspect it and override it.</p>
           }
-        </div>
+        </section>
       </div>
 
-      <div class="grid-2">
-        <div class="card"><div class="card-head"><h2>Input</h2></div><pre class="output">{{ run.input | json2 }}</pre></div>
-        <div class="card"><div class="card-head"><h2>Output</h2></div><pre class="output">{{ run.output === null ? '-' : (run.output | json2) }}</pre></div>
+      <div class="io-grid">
+        <section class="panel"><header class="panel-head"><h2>Input</h2></header><pre class="output">{{ run.input | json2 }}</pre></section>
+        <section class="panel"><header class="panel-head"><h2>Output</h2></header>
+          @if (run.output === null) {
+            <p class="empty small">{{ run.status === 'succeeded' ? 'This run produced no output.' : 'The run output appears here when the last step finishes.' }}</p>
+          } @else {
+            <pre class="output">{{ run.output | json2 }}</pre>
+          }
+        </section>
       </div>
     } @else {
-      <div class="empty">{{ notFound() ? 'Run not found.' : 'Loading run…' }}</div>
+      <p class="empty">{{ notFound() ? 'Run not found. It may have been deleted with its workflow.' : 'Loading run…' }}</p>
     }
   `,
 })
 export class RunDetailPage {
   readonly id = input.required<string>();
+  /** Query param: the step to open first, e.g. from an approval link. */
+  readonly step = input<string>();
 
   private readonly api = inject(ApiService);
   private readonly rt = inject(RealtimeService);
@@ -201,6 +234,8 @@ export class RunDetailPage {
   protected readonly diagnosing = signal(false);
   protected readonly notFound = signal(false);
   protected readonly tick = signal(0);
+  /** Clock for live durations, advanced with the tick so a render never reads two different times. */
+  private readonly now = signal(Date.now());
   protected comment = '';
   private userPicked = false;
 
@@ -221,9 +256,8 @@ export class RunDetailPage {
   });
   protected readonly waiting = computed(() => this.orderedTasks().filter((t) => t.status === 'waiting_approval'));
   protected readonly runDuration = computed(() => {
-    this.tick();
     const r = this.run();
-    return r ? elapsed(r.startedAt, r.finishedAt) : null;
+    return r ? elapsed(r.startedAt, r.finishedAt, this.now()) : null;
   });
 
   constructor() {
@@ -266,12 +300,19 @@ export class RunDetailPage {
       if (t?.status === 'running' && t.type === 'llm') this.activeTab.set('live');
     });
 
-    const timer = setInterval(() => this.tick.update((n) => n + 1), 1000);
+    const timer = setInterval(() => {
+      this.now.set(Date.now());
+      this.tick.update((n) => n + 1);
+    }, 1000);
     destroy.onDestroy(() => {
       unwatch?.();
       sub.unsubscribe();
       clearInterval(timer);
     });
+  }
+
+  protected tabLabel(tab: Tab): string {
+    return { output: 'Output', live: 'Live', logs: 'Logs', config: 'Config' }[tab];
   }
 
   protected pick(stepId: string): void {
@@ -280,8 +321,7 @@ export class RunDetailPage {
   }
 
   protected taskDuration(t: Task): number | null {
-    this.tick();
-    return elapsed(t.startedAt, t.finishedAt ?? (t.status === 'running' ? null : t.updatedAt));
+    return elapsed(t.startedAt, t.finishedAt ?? (t.status === 'running' ? null : t.updatedAt), this.now());
   }
 
   protected canSkip(status: TaskStatus): boolean {
@@ -344,7 +384,10 @@ export class RunDetailPage {
       next: ({ run, tasks }) => {
         this.run.set(run);
         this.tasks.set(new Map(tasks.map((t) => [t.id, t])));
-        if (!this.selected()) {
+        if (this.step() && tasks.some((t) => t.stepId === this.step())) {
+          this.selected.set(this.step()!);
+          this.userPicked = true;
+        } else if (!this.selected()) {
           const focus = tasks.find((t) => t.status === 'waiting_approval') ?? tasks.find((t) => t.status === 'failed') ?? tasks.find((t) => t.status === 'running');
           this.selected.set(focus?.stepId ?? run.definition.steps[0]?.id ?? null);
         }

@@ -5,6 +5,7 @@ import { ApiService, WorkflowPayload } from '../core/api.service';
 import { StepDefinition, StepType, ValidationIssue, WorkflowDefinition } from '../core/models';
 import { ToastService } from '../core/toast.service';
 import { DagView } from '../shared/dag-view';
+import { Icon } from '../shared/icon';
 
 const STEP_TEMPLATES: Record<StepType, (id: string, after: string[]) => StepDefinition> = {
   llm: (id, after) => ({
@@ -35,85 +36,92 @@ const BLANK: WorkflowDefinition = {
 
 @Component({
   selector: 'app-workflow-editor',
-  imports: [FormsModule, RouterLink, DagView],
+  imports: [FormsModule, RouterLink, DagView, Icon],
   template: `
+    <nav class="crumbs" aria-label="Breadcrumb"><a routerLink="/workflows"><app-icon name="back" />Workflows</a></nav>
     <div class="page-head">
       <div>
-        <a routerLink="/workflows" class="muted small">← Workflows</a>
         <h1>{{ id() ? name() || 'Edit workflow' : 'New workflow' }}</h1>
         @if (version()) {
-          <p class="muted">Version {{ version() }} · saving creates a new version; running runs keep the version they started with.</p>
+          <p class="lede">Version {{ version() }}. Saving creates a new version; runs already in flight keep the version they started with.</p>
+        } @else {
+          <p class="lede">Define the steps as JSON or add them from the step buttons; the graph redraws as you type.</p>
         }
       </div>
       <div class="actions">
         @if (id()) {
-          <button class="btn danger-ghost" (click)="remove()">Delete</button>
-          <button class="btn ghost" [disabled]="dirty() || saving()" (click)="run()" [title]="dirty() ? 'Save first' : ''">▶ Run</button>
+          <button class="btn danger-outline" (click)="remove()"><app-icon name="delete" />Delete</button>
+          <button class="btn" [disabled]="dirty() || saving()" (click)="run()" [title]="dirty() ? 'Save first' : 'Run with the example input'"><app-icon name="play" />Run</button>
         }
-        <button class="btn primary" [disabled]="!canSave() || saving()" (click)="save()">{{ saving() ? 'Saving…' : 'Save' }}</button>
+        <button class="btn primary" [disabled]="!canSave() || saving()" (click)="save()"><app-icon name="check" />{{ saving() ? 'Saving…' : 'Save' }}</button>
       </div>
     </div>
 
+    <section class="panel preview" aria-labelledby="preview-title">
+      <header class="panel-head">
+        <h2 id="preview-title">Graph preview</h2>
+        <span class="panel-meta">Stages run left to right; steps in one column run in parallel</span>
+      </header>
+      @if (parsed()?.steps?.length) {
+        <app-dag [steps]="parsed()!.steps" />
+      } @else {
+        <p class="empty small">Fix the JSON to see the graph.</p>
+      }
+    </section>
+
     <div class="editor">
       <div class="editor-left">
-        <div class="card form">
+        <section class="panel form" aria-label="Details">
           <label>Name <input [ngModel]="name()" (ngModelChange)="name.set($event); dirty.set(true)" placeholder="My workflow" /></label>
           <label>Description <textarea rows="2" [ngModel]="description()" (ngModelChange)="description.set($event); dirty.set(true)"></textarea></label>
           <div class="form-row">
-            <label class="grow">Schedule (cron) <small>optional, e.g. <code>*/15 * * * *</code></small>
-              <input [ngModel]="schedule()" (ngModelChange)="schedule.set($event); dirty.set(true)" placeholder="none" class="mono" />
+            <label class="grow">Schedule (cron) <small>Optional, e.g. <code>*/15 * * * *</code></small>
+              <input [ngModel]="schedule()" (ngModelChange)="schedule.set($event); dirty.set(true)" placeholder="No schedule" class="mono" />
             </label>
-            <label class="check"><input type="checkbox" [ngModel]="enabled()" (ngModelChange)="enabled.set($event); dirty.set(true)" /> schedule enabled</label>
+            <label class="check"><input type="checkbox" [ngModel]="enabled()" (ngModelChange)="enabled.set($event); dirty.set(true)" /> Schedule enabled</label>
           </div>
-        </div>
+        </section>
+      </div>
 
-        <div class="card">
-          <div class="card-head">
-            <h2>Definition</h2>
-            <div class="palette">
-              <span class="muted small">add step:</span>
-              @for (t of stepTypes; track t) {
-                <button class="chip" (click)="addStep(t)">+ {{ t }}</button>
-              }
-            </div>
+      <div class="editor-right">
+        <section class="panel" aria-labelledby="def-title">
+          <header class="panel-head">
+            <h2 id="def-title">Definition</h2>
+          </header>
+          <div class="add-steps" role="group" aria-label="Add a step">
+            <span class="muted small">Add step</span>
+            @for (t of stepTypes; track t) {
+              <button class="btn sm" (click)="addStep(t)"><app-icon [name]="t" />{{ t }}</button>
+            }
           </div>
-          <textarea class="code definition" spellcheck="false" [ngModel]="source()" (ngModelChange)="onSource($event)"></textarea>
-          <div class="validation">
+          <label class="sr-only" for="definition">Workflow definition (JSON)</label>
+          <textarea id="definition" class="code definition" spellcheck="false" [ngModel]="source()" (ngModelChange)="onSource($event)"></textarea>
+          <div class="validation" role="status">
             @if (parseError()) {
-              <div class="error-text">JSON: {{ parseError() }}</div>
+              <p class="error-text"><app-icon name="alert" />JSON: {{ parseError() }}</p>
             } @else if (issues().length) {
               @for (i of issues(); track $index) {
-                <div class="error-text"><code>{{ i.path }}</code> {{ i.message }}</div>
+                <p class="error-text"><app-icon name="alert" /><code>{{ i.path }}</code> {{ i.message }}</p>
               }
             } @else if (validating()) {
-              <div class="muted small">Validating…</div>
+              <p class="muted small">Validating…</p>
             } @else {
-              <div class="ok-text">✓ Valid DAG · {{ parsed()?.steps?.length ?? 0 }} steps · {{ levels() }} stages</div>
+              <p class="ok-text"><app-icon name="check" />Valid DAG · {{ parsed()?.steps?.length ?? 0 }} steps in {{ levels() }} stages</p>
             }
           </div>
           <details class="help">
-            <summary>Template &amp; step reference</summary>
+            <summary>Template and step reference</summary>
             <ul ngNonBindable>
               <li><code>{{input.field}}</code> run input · <code>{{steps.id.output.text}}</code> upstream output · <code>{{run.id}}</code></li>
               <li>A string that is only a template keeps the value's type (objects stay objects).</li>
               <li><b>llm</b>: prompt, system?, model?, maxTokens?, effort?, outputSchema? (JSON Schema → output.data)</li>
               <li><b>http</b>: url, method?, headers?, body?, expectStatus? · <b>delay</b>: ms, failRate? · <b>transform</b>: output · <b>approval</b>: message</li>
-              <li>Per step: dependsOn, retries (auto, exponential backoff), timeoutMs, when (falsy → skipped)</li>
+              <li>Per step: dependsOn, retries (automatic, exponential backoff), timeoutMs, when (falsy → skipped)</li>
             </ul>
           </details>
-        </div>
+        </section>
       </div>
 
-      <div class="editor-right">
-        <div class="card sticky">
-          <div class="card-head"><h2>Graph preview</h2><span class="muted small">columns run left → right; a column's steps run in parallel</span></div>
-          @if (parsed()?.steps?.length) {
-            <app-dag [steps]="parsed()!.steps" />
-          } @else {
-            <div class="empty small">Fix the JSON to see the graph.</div>
-          }
-        </div>
-      </div>
     </div>
   `,
 })
