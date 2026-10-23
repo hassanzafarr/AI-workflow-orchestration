@@ -1,4 +1,4 @@
-import { Component, computed, input, output } from '@angular/core';
+import { afterNextRender, Component, computed, DestroyRef, ElementRef, inject, input, output, signal } from '@angular/core';
 import { StepDefinition, StepType, TaskStatus } from '../core/models';
 
 interface NodeBox {
@@ -10,6 +10,7 @@ interface NodeBox {
   status: TaskStatus | 'draft';
   attempt: number;
   hasWhen: boolean;
+  stage: number;
 }
 
 interface Edge {
@@ -36,34 +37,53 @@ function connector(x1: number, y1: number, x2: number, y2: number): string {
   return `M${x1},${y1} H${mid - r} Q${mid},${y1} ${mid},${y1 + dir * r} V${y2 - dir * r} Q${mid},${y2} ${mid + r},${y2} H${x2}`;
 }
 
-/** Left-to-right DAG layout: columns are dependency depth, nodes coloured by live status. */
-/** Left-to-right DAG layout: columns are dependency depth; each step is a station plate with a lamp. */
+/**
+ * Left-to-right DAG layout: columns are dependency depth; each step is a station plate with a lamp.
+ * In a container too narrow for the graph at MIN_SCALE it becomes a vertical list of stages.
+ */
 @Component({
   selector: 'app-dag',
+  host: { class: 'dag' },
   template: `
-    <div class="dag-scroll">
-      <svg [attr.width]="layout().width" [attr.height]="layout().height" [style.min-width.px]="layout().width * MIN_SCALE" [attr.viewBox]="'0 0 ' + layout().width + ' ' + layout().height" role="group" aria-label="Workflow graph">
-        <defs>
-          <marker id="dag-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-            <path d="M 0 1 L 8 5 L 0 9 z" class="dag-arrow" />
-          </marker>
-        </defs>
-        @for (e of layout().edges; track e.id) {
-          <path [attr.d]="e.d" [class]="'dag-edge s-' + e.status" marker-end="url(#dag-arrow)" />
+    @if (compact()) {
+      <ol class="dag-stages" aria-label="Workflow graph">
+        @for (stage of stages(); track $index) {
+          <li class="dag-stage">
+            <span class="dag-stage-label">Stage {{ $index + 1 }}{{ stage.length > 1 ? ' · ' + stage.length + ' in parallel' : '' }}</span>
+            <div class="dag-stage-nodes">
+              @for (n of stage; track n.id) {
+                <button type="button" [class]="'dag-chip s-' + n.status" [class.selected]="n.id === selected()" [attr.aria-pressed]="n.id === selected()" (click)="select.emit(n.id)">
+                  <i class="lamp"></i>
+                  <span class="dag-chip-text"><span class="dag-chip-name">{{ n.name }}</span><span class="dag-sub-text">{{ sub(n) }}</span></span>
+                </button>
+              }
+            </div>
+          </li>
         }
-        @for (n of layout().nodes; track n.id) {
-          <g [class]="'dag-node s-' + n.status" [class.selected]="n.id === selected()" (click)="select.emit(n.id)" (keydown.enter)="select.emit(n.id)" (keydown.space)="select.emit(n.id); $event.preventDefault()"
-             tabindex="0" role="button" [attr.aria-pressed]="n.id === selected()" [attr.aria-label]="n.name + ', ' + n.type + (n.status !== 'draft' ? ', ' + statusLabel(n.status) : '')" [attr.transform]="'translate(' + n.x + ',' + n.y + ')'">
-            <rect class="dag-plate" [attr.width]="W" [attr.height]="H" rx="3" />
-            <rect class="dag-lamp" x="12" y="14" width="10" height="10" rx="2" />
-            <text x="32" y="23" class="dag-title">{{ n.name.length > 21 ? n.name.slice(0, 20) + '…' : n.name }}</text>
-            <text x="32" y="42" class="dag-sub">
-              {{ n.type.toUpperCase() }}{{ n.hasWhen ? ' · IF' : '' }}{{ n.status !== 'draft' ? ' · ' + statusLabel(n.status) : '' }}{{ n.attempt > 1 ? ' · TRY ' + n.attempt : '' }}
-            </text>
-          </g>
-        }
-      </svg>
-    </div>
+      </ol>
+    } @else {
+      <div class="dag-scroll">
+        <svg [attr.width]="layout().width" [attr.height]="layout().height" [style.min-width.px]="layout().width * MIN_SCALE" [attr.viewBox]="'0 0 ' + layout().width + ' ' + layout().height" role="group" aria-label="Workflow graph">
+          <defs>
+            <marker id="dag-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 1 L 8 5 L 0 9 z" class="dag-arrow" />
+            </marker>
+          </defs>
+          @for (e of layout().edges; track e.id) {
+            <path [attr.d]="e.d" [class]="'dag-edge s-' + e.status" marker-end="url(#dag-arrow)" />
+          }
+          @for (n of layout().nodes; track n.id) {
+            <g [class]="'dag-node s-' + n.status" [class.selected]="n.id === selected()" (click)="select.emit(n.id)" (keydown.enter)="select.emit(n.id)" (keydown.space)="select.emit(n.id); $event.preventDefault()"
+               tabindex="0" role="button" [attr.aria-pressed]="n.id === selected()" [attr.aria-label]="n.name + ', ' + n.type + (n.status !== 'draft' ? ', ' + statusLabel(n.status) : '')" [attr.transform]="'translate(' + n.x + ',' + n.y + ')'">
+              <rect class="dag-plate" [attr.width]="W" [attr.height]="H" rx="3" />
+              <rect class="dag-lamp" x="12" y="14" width="10" height="10" rx="2" />
+              <text x="32" y="23" class="dag-title">{{ n.name.length > 21 ? n.name.slice(0, 20) + '…' : n.name }}</text>
+              <text x="32" y="42" class="dag-sub">{{ sub(n) }}</text>
+            </g>
+          }
+        </svg>
+      </div>
+    }
   `,
 })
 export class DagView {
@@ -76,8 +96,28 @@ export class DagView {
   protected readonly H = H;
   protected readonly MIN_SCALE = MIN_SCALE;
 
+  private readonly hostWidth = signal(0);
+  protected readonly compact = computed(() => this.hostWidth() > 0 && this.hostWidth() < this.layout().width * MIN_SCALE);
+  protected readonly stages = computed(() => {
+    const stages: NodeBox[][] = [];
+    for (const n of this.layout().nodes) (stages[n.stage] ??= []).push(n);
+    return stages;
+  });
+
+  constructor() {
+    const host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+    const observer = new ResizeObserver(([entry]) => this.hostWidth.set(entry.contentRect.width));
+    afterNextRender(() => observer.observe(host));
+    inject(DestroyRef).onDestroy(() => observer.disconnect());
+  }
+
   protected statusLabel(status: string): string {
     return status === 'waiting_approval' ? 'APPROVAL' : status.toUpperCase();
+  }
+
+  protected sub(n: NodeBox): string {
+    const status = n.status !== 'draft' ? ' · ' + this.statusLabel(n.status) : '';
+    return `${n.type.toUpperCase()}${n.hasWhen ? ' · IF' : ''}${status}${n.attempt > 1 ? ' · TRY ' + n.attempt : ''}`;
   }
 
   protected readonly layout = computed(() => {
@@ -120,6 +160,7 @@ export class DagView {
       status: statusOf(s.id),
       attempt: statuses[s.id]?.attempt ?? 0,
       hasWhen: Boolean(s.when),
+      stage: depth.get(s.id)!,
     }));
     const edges: Edge[] = steps.flatMap((s) =>
       s.dependsOn

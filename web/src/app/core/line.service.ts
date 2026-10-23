@@ -62,6 +62,12 @@ export class LineService {
   private readonly early = new Map<string, Task[]>();
   private readonly loading = new Set<string>();
 
+  /** Running runs held at an approval gate: their lamp reads yellow, not green. */
+  readonly gated = computed(
+    () => new Set([...this.tracked().values()].filter((t) => t.run.status === 'running' && t.stations.some((s) => s.status === 'waiting_approval')).map((t) => t.run.id)),
+  );
+  readonly liveCount = computed(() => [...this.tracked().values()].filter((t) => LIVE.includes(t.run.status)).length);
+
   readonly inFlight = computed(() =>
     [...this.tracked().values()].sort((a, b) => b.run.createdAt.localeCompare(a.run.createdAt)),
   );
@@ -118,12 +124,24 @@ export class LineService {
     this.loadWorkflows();
     this.loadFailed();
     this.api.runs({ status: LIVE.join(','), limit: 50 }).subscribe({ next: (r) => r.runs.forEach((run) => this.track(run)), error: () => undefined });
+    this.api.runs({ limit: 20 }).subscribe({
+      next: (r) =>
+        this.rt.seedActivity(
+          r.runs.map((run) => ({ runId: run.id, label: run.workflowName, status: run.status, kind: 'run' as const, at: run.finishedAt ?? run.startedAt ?? run.createdAt })),
+        ),
+      error: () => undefined,
+    });
 
     this.rt.events$.subscribe((e) => {
       if (e.type === 'run.updated') this.onRun(e.run);
       else if (e.type === 'task.updated') this.onTask(e.task);
       else if (e.type === 'workflow.updated') this.loadWorkflows();
     });
+  }
+
+  /** Status to draw for a run: a running run waiting at a gate shows the approval lamp. */
+  runLamp(run: { id: string; status: string }): string {
+    return this.gated().has(run.id) ? 'waiting_approval' : run.status;
   }
 
   private onRun(run: RunSummary): void {

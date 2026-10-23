@@ -1,4 +1,4 @@
-import { Component, computed, ElementRef, effect, inject, signal, viewChild } from '@angular/core';
+import { Component, ElementRef, effect, inject, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { ApiService } from './core/api.service';
@@ -28,12 +28,17 @@ import { Icon } from './shared/icon';
           <span>Orchestrator</span>
         </a>
         <nav class="nav" aria-label="Main">
-          <a routerLink="/overview" routerLinkActive="active"><app-icon name="overview" />Overview</a>
+          <a routerLink="/overview" routerLinkActive="active">
+            <app-icon name="overview" />Overview
+            @if (line.attention().length) {
+              <span class="count count-attn" [attr.aria-label]="line.attention().length + ' need you'">{{ line.attention().length }}</span>
+            }
+          </a>
           <a routerLink="/workflows" routerLinkActive="active"><app-icon name="workflows" />Workflows</a>
           <a routerLink="/runs" routerLinkActive="active">
             <app-icon name="runs" />Runs
-            @if (liveRuns() > 0) {
-              <span class="count count-live" [attr.aria-label]="liveRuns() + ' running'">{{ liveRuns() }}</span>
+            @if (line.liveCount() > 0) {
+              <span class="count count-live" [attr.aria-label]="line.liveCount() + ' in flight'">{{ line.liveCount() }}</span>
             }
           </a>
           <a routerLink="/workers" routerLinkActive="active">
@@ -58,7 +63,7 @@ import { Icon } from './shared/icon';
       </aside>
 
       <div class="main">
-        <header class="board" aria-label="Line status">
+        <header class="board" [class.stopped]="rt.queue()?.paused" aria-label="Line status">
           <ul class="board-cells">
             @for (w of line.lamps(); track w.workflow.id) {
               <li>
@@ -84,13 +89,15 @@ import { Icon } from './shared/icon';
             <i class="board-lamp"></i>
             <span class="cell-text">
               <span class="cell-name">{{ rt.queue()?.paused ? 'Line stopped' : 'Queue' }}</span>
-              <span class="cell-sub">
-                @if (rt.queue(); as q) {
-                  {{ q.waiting }} waiting · {{ q.active }} running · {{ rt.busy() }}/{{ rt.capacity() }} slots
-                } @else {
-                  Connecting…
-                }
-              </span>
+              @if (rt.queue(); as q) {
+                <span class="line-figs">
+                  <span><b>{{ q.waiting }}</b>waiting</span>
+                  <span><b>{{ q.active }}</b>running</span>
+                  <span><b>{{ rt.busy() }}/{{ rt.capacity() }}</b>slots</span>
+                </span>
+              } @else {
+                <span class="cell-sub">Connecting…</span>
+              }
             </span>
             @if (rt.queue()?.paused) {
               <button class="btn sm board-btn" (click)="toggleQueue()"><app-icon name="play" />Resume</button>
@@ -141,7 +148,6 @@ export class App {
 
   protected readonly info = signal<PlatformInfo | null>(null);
   protected readonly tick = signal(0);
-  protected readonly liveRuns = computed(() => [...this.rt.runs().values()].filter((r) => r.status === 'running').length);
   protected actorDraft = '';
   protected tokenDraft = '';
 

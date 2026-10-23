@@ -154,6 +154,13 @@ export class RealtimeService {
     }
   }
 
+  /** Fill an empty feed with recent history so a fresh page doesn't open on a blank feed. */
+  seedActivity(items: Omit<ActivityItem, 'id'>[]): void {
+    if (this.activity().length) return;
+    const sorted = [...items].sort((a, b) => b.at.localeCompare(a.at)).slice(0, 60);
+    this.activity.set(sorted.map((i) => ({ ...i, id: this.activityId++ })));
+  }
+
   private pushActivity(item: Omit<ActivityItem, 'id' | 'at'>): void {
     this.activity.update((list) => [{ ...item, id: this.activityId++, at: new Date().toISOString() }, ...list].slice(0, 60));
   }

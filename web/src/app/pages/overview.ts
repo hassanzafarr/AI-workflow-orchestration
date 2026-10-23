@@ -100,7 +100,7 @@ const LAMP_STATUS: Record<WorkflowLamp['lamp'], string> = {
                     <div class="flight-step">{{ currentStep(t.stations) }}</div>
                   </div>
                   <div class="flight-meta">
-                    <app-status [status]="t.run.status" />
+                    <app-status [status]="line.runLamp(t.run)" />
                     <span class="num">{{ t.run.progress.done }}/{{ t.run.progress.total }} steps · {{ t.run.startedAt | ago: tick() }}</span>
                   </div>
                 </a>

@@ -1,6 +1,7 @@
 import { Component, computed, DestroyRef, effect, inject, input, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { ApiService } from '../core/api.service';
+import { LineService } from '../core/line.service';
 import { RUN_STATUSES, RunStatus, RunSummary } from '../core/models';
 import { RealtimeService } from '../core/realtime.service';
 import { ToastService } from '../core/toast.service';
@@ -46,7 +47,7 @@ const PAGE = 50;
                   <a class="strong-link" [routerLink]="['/runs', run.id]" (click)="$event.stopPropagation()">{{ run.workflowName }}</a>
                   <div class="muted small"><span class="mono">#{{ run.id | short }}</span> · v{{ run.workflowVersion }}</div>
                 </td>
-                <td><app-status [status]="run.status" /></td>
+                <td><app-status [status]="line.runLamp(run)" /></td>
                 <td class="w-progress">
                   <div class="progress" role="img" [attr.aria-label]="run.progress.done + ' of ' + run.progress.total + ' steps done'">
                     <span class="p-done" [style.width.%]="pct(run.progress.done, run.progress.total)"></span><span class="p-run" [style.width.%]="pct(run.progress.running, run.progress.total)"></span><span class="p-fail" [style.width.%]="pct(run.progress.failed, run.progress.total)"></span>
@@ -77,6 +78,7 @@ export class RunsPage {
   private readonly api = inject(ApiService);
   private readonly router = inject(Router);
   private readonly rt = inject(RealtimeService);
+  protected readonly line = inject(LineService);
   private readonly toast = inject(ToastService);
 
   protected readonly statuses = RUN_STATUSES;

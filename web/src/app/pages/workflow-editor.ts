@@ -57,6 +57,18 @@ const BLANK: WorkflowDefinition = {
       </div>
     </div>
 
+    <section class="panel preview" aria-labelledby="preview-title">
+      <header class="panel-head">
+        <h2 id="preview-title">Graph preview</h2>
+        <span class="panel-meta">Stages run left to right; steps in one column run in parallel</span>
+      </header>
+      @if (parsed()?.steps?.length) {
+        <app-dag [steps]="parsed()!.steps" />
+      } @else {
+        <p class="empty small">Fix the JSON to see the graph.</p>
+      }
+    </section>
+
     <div class="editor">
       <div class="editor-left">
         <section class="panel form" aria-label="Details">
@@ -69,7 +81,9 @@ const BLANK: WorkflowDefinition = {
             <label class="check"><input type="checkbox" [ngModel]="enabled()" (ngModelChange)="enabled.set($event); dirty.set(true)" /> Schedule enabled</label>
           </div>
         </section>
+      </div>
 
+      <div class="editor-right">
         <section class="panel" aria-labelledby="def-title">
           <header class="panel-head">
             <h2 id="def-title">Definition</h2>
@@ -108,19 +122,6 @@ const BLANK: WorkflowDefinition = {
         </section>
       </div>
 
-      <div class="editor-right">
-        <section class="panel sticky" aria-labelledby="preview-title">
-          <header class="panel-head">
-            <h2 id="preview-title">Graph preview</h2>
-            <span class="panel-meta">Stages run left to right; steps in one column run in parallel</span>
-          </header>
-          @if (parsed()?.steps?.length) {
-            <app-dag [steps]="parsed()!.steps" />
-          } @else {
-            <p class="empty small">Fix the JSON to see the graph.</p>
-          }
-        </section>
-      </div>
     </div>
   `,
 })

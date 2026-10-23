@@ -22,7 +22,7 @@ type Tab = 'output' | 'live' | 'logs' | 'config';
         <div>
           <h1>{{ run.workflowName }} <span class="mono id">#{{ run.id | short }}</span></h1>
           <p class="run-meta">
-            <app-status [status]="run.status" />
+            <app-status [status]="waiting().length && run.status === 'running' ? 'waiting_approval' : run.status" />
             <span>{{ run.trigger }} trigger</span>
             <span>v{{ run.workflowVersion }}</span>
             <span>Started {{ run.startedAt | ago: tick() }}</span>
@@ -75,7 +75,7 @@ type Tab = 'output' | 'live' | 'logs' | 'config';
         <section class="panel flush" aria-label="Steps">
           <div class="table-wrap">
             <table class="table">
-              <thead><tr><th>Step</th><th>Status</th><th>Worker</th><th class="num">Duration</th></tr></thead>
+              <thead><tr><th>Step</th><th>Status</th><th class="hide-sm">Worker</th><th class="num">Duration</th></tr></thead>
               <tbody>
                 @for (t of orderedTasks(); track t.id) {
                   <tr class="clickable" [class.row-selected]="t.stepId === selected()" (click)="pick(t.stepId)">
@@ -90,7 +90,7 @@ type Tab = 'output' | 'live' | 'logs' | 'config';
                         <span class="muted small"> · try {{ t.attempt }}</span>
                       }
                     </td>
-                    <td class="mono small muted">{{ t.workerId ?? '–' }}</td>
+                    <td class="mono small muted hide-sm">{{ t.workerId ?? '–' }}</td>
                     <td class="num small">{{ taskDuration(t) | duration }}</td>
                   </tr>
                 }
