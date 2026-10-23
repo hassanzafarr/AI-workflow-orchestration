@@ -7,103 +7,108 @@ import { WorkflowListItem } from '../core/models';
 import { RealtimeService } from '../core/realtime.service';
 import { ToastService } from '../core/toast.service';
 import { AgoPipe } from '../shared/format';
+import { Icon } from '../shared/icon';
 import { StatusBadge } from '../shared/status-badge';
 
 @Component({
   selector: 'app-workflows',
-  imports: [RouterLink, FormsModule, StatusBadge, AgoPipe],
+  imports: [RouterLink, FormsModule, StatusBadge, Icon, AgoPipe],
   template: `
     <div class="page-head">
       <div>
         <h1>Workflows</h1>
-        <p class="muted">DAGs of LLM, HTTP, transform, delay and approval steps. Independent steps run in parallel across workers.</p>
+        <p class="lede">DAGs of LLM, HTTP, transform, delay and approval steps. Steps that don't depend on each other run in parallel on different workers.</p>
       </div>
       <div class="actions">
-        <button class="btn ai" (click)="aiOpen.set(true)">✦ Generate with Claude</button>
-        <a class="btn primary" routerLink="/workflows/new">+ New workflow</a>
+        <button class="btn" [class.active]="aiOpen()" [attr.aria-expanded]="aiOpen()" (click)="aiOpen.set(!aiOpen())"><app-icon name="llm" />Generate with Claude</button>
+        <a class="btn primary" routerLink="/workflows/new"><app-icon name="add" />New workflow</a>
       </div>
     </div>
 
-    @if (loading()) {
-      <div class="empty">Loading…</div>
-    } @else if (!workflows().length) {
-      <div class="empty">No workflows yet. Create one or let Claude draft it from a description.</div>
-    } @else {
-      <div class="wf-grid">
-        @for (wf of workflows(); track wf.id) {
-          <article class="card wf-card">
-            <div class="wf-top">
-              <a [routerLink]="['/workflows', wf.id]" class="wf-name">{{ wf.name }}</a>
-              <span class="muted small">v{{ wf.version }}</span>
-            </div>
-            <p class="wf-desc">{{ wf.description || 'No description' }}</p>
-            <div class="wf-tags">
-              <span class="tag">{{ wf.definition.steps.length }} steps</span>
-              @for (t of stepTypes(wf); track t) {
-                <span class="tag tag-type">{{ t }}</span>
-              }
-              @if (wf.schedule) {
-                <span class="tag" [class.tag-off]="!wf.enabled" [title]="wf.enabled ? 'Scheduled' : 'Schedule disabled'">⏱ {{ wf.schedule }}{{ wf.enabled ? '' : ' (off)' }}</span>
-              }
-            </div>
-            <div class="wf-foot">
-              <div class="small muted">
+    @if (aiOpen()) {
+      <section class="panel compose" aria-labelledby="ai-title">
+        <header class="panel-head">
+          <h2 id="ai-title">Draft a workflow with Claude</h2>
+          <span class="panel-meta">Claude designs the DAG; the platform validates it before you save</span>
+        </header>
+        <label class="sr-only" for="ai-prompt">Describe the automation</label>
+        <textarea id="ai-prompt" rows="4" [(ngModel)]="aiPrompt" placeholder="e.g. Every morning fetch our status page, summarize incidents with Claude, and ask the on-call engineer to approve before posting to Slack"></textarea>
+        <div class="examples">
+          <span class="muted small">Try:</span>
+          @for (ex of examples; track ex) {
+            <button class="chip" (click)="aiPrompt = ex">{{ ex }}</button>
+          }
+        </div>
+        <div class="form-actions">
+          <button class="btn ghost" [disabled]="busy()" (click)="aiOpen.set(false)">Cancel</button>
+          <button class="btn primary" [disabled]="busy() || aiPrompt.trim().length < 10" (click)="generate()">
+            {{ busy() ? 'Claude is designing…' : 'Generate draft' }}
+          </button>
+        </div>
+      </section>
+    }
+
+    <section class="panel flush" aria-label="Workflows">
+      @if (loading()) {
+        <p class="empty">Loading workflows…</p>
+      } @else if (!workflows().length) {
+        <p class="empty">No workflows yet. Create one, or describe what you want and let Claude draft it.</p>
+      } @else {
+        <ul class="wf-list">
+          @for (wf of workflows(); track wf.id) {
+            <li class="wf-row" [class.open]="runTarget()?.id === wf.id">
+              <div class="wf-main">
+                <div class="wf-name">
+                  <a [routerLink]="['/workflows', wf.id]">{{ wf.name }}</a>
+                  <span class="muted small">v{{ wf.version }}</span>
+                </div>
+                <p class="wf-desc">{{ wf.description || 'No description' }}</p>
+                <div class="wf-facts">
+                  <span class="types">
+                    @for (t of stepTypes(wf); track t) {
+                      <span class="type" [title]="t"><app-icon [name]="t" />{{ t }}</span>
+                    }
+                  </span>
+                  <span class="muted">{{ wf.definition.steps.length }} steps</span>
+                  @if (wf.schedule) {
+                    <span class="sched" [class.off]="!wf.enabled" [title]="wf.enabled ? 'Runs on this schedule' : 'Schedule disabled'">
+                      <app-icon name="schedule" /><span class="mono">{{ wf.schedule }}</span>{{ wf.enabled ? '' : ' · off' }}
+                    </span>
+                  }
+                </div>
+              </div>
+              <div class="wf-last">
                 @if (wf.lastRun) {
                   <a [routerLink]="['/runs', wf.lastRun.id]"><app-status [status]="wf.lastRun.status" /></a>
-                  {{ wf.lastRun.createdAt | ago }} · {{ wf.runCount }} runs
+                  <span class="muted small">{{ wf.lastRun.createdAt | ago }} · {{ wf.runCount }} {{ wf.runCount === 1 ? 'run' : 'runs' }}</span>
                 } @else {
-                  never run
+                  <span class="muted small">Never run</span>
                 }
               </div>
-              <div class="actions">
-                <a class="btn ghost sm" [routerLink]="['/runs']" [queryParams]="{ workflowId: wf.id }">History</a>
-                <a class="btn ghost sm" [routerLink]="['/workflows', wf.id]">Edit</a>
-                <button class="btn primary sm" (click)="openRun(wf)">▶ Run</button>
+              <div class="wf-actions">
+                <a class="btn ghost sm" [routerLink]="['/runs']" [queryParams]="{ workflowId: wf.id }"><app-icon name="history" />History</a>
+                <a class="btn ghost sm" [routerLink]="['/workflows', wf.id]"><app-icon name="edit" />Edit</a>
+                <button class="btn primary sm" [attr.aria-expanded]="runTarget()?.id === wf.id" (click)="toggleRun(wf)"><app-icon name="play" />Run</button>
               </div>
-            </div>
-          </article>
-        }
-      </div>
-    }
-
-    @if (runTarget(); as wf) {
-      <div class="modal-backdrop" (click)="runTarget.set(null)">
-        <div class="modal" (click)="$event.stopPropagation()">
-          <h3>Run “{{ wf.name }}”</h3>
-          <label>Input (JSON) <small>available to steps as <code ngNonBindable>{{input.field}}</code></small>
-            <textarea class="code" rows="8" [(ngModel)]="runInput" spellcheck="false"></textarea>
-          </label>
-          @if (runError()) {
-            <div class="error-text">{{ runError() }}</div>
+              @if (runTarget()?.id === wf.id) {
+                <div class="wf-run">
+                  <label>Run input (JSON) <small>Steps read it as <code ngNonBindable>{{input.field}}</code>.</small>
+                    <textarea class="code" rows="6" [(ngModel)]="runInput" spellcheck="false"></textarea>
+                  </label>
+                  @if (runError()) {
+                    <p class="error-text"><app-icon name="alert" />{{ runError() }}</p>
+                  }
+                  <div class="form-actions">
+                    <button class="btn ghost" (click)="runTarget.set(null)">Cancel</button>
+                    <button class="btn primary" [disabled]="busy()" (click)="startRun(wf)"><app-icon name="play" />{{ busy() ? 'Starting…' : 'Start run' }}</button>
+                  </div>
+                </div>
+              }
+            </li>
           }
-          <div class="modal-actions">
-            <button class="btn ghost" (click)="runTarget.set(null)">Cancel</button>
-            <button class="btn primary" [disabled]="busy()" (click)="startRun(wf)">▶ Start run</button>
-          </div>
-        </div>
-      </div>
-    }
-
-    @if (aiOpen()) {
-      <div class="modal-backdrop" (click)="!busy() && aiOpen.set(false)">
-        <div class="modal wide" (click)="$event.stopPropagation()">
-          <h3>✦ Generate a workflow with Claude</h3>
-          <p class="muted small">Describe the automation. Claude designs the DAG (parallel steps, retries, approval gates) and the platform validates it before you save.</p>
-          <textarea rows="5" [(ngModel)]="aiPrompt" placeholder="e.g. Every morning fetch our status page, summarize incidents with Claude, and ask the on-call engineer to approve before posting to Slack"></textarea>
-          <div class="chips">
-            @for (ex of examples; track ex) {
-              <button class="chip" (click)="aiPrompt = ex">{{ ex }}</button>
-            }
-          </div>
-          <div class="modal-actions">
-            <button class="btn ghost" [disabled]="busy()" (click)="aiOpen.set(false)">Cancel</button>
-            <button class="btn ai" [disabled]="busy() || aiPrompt.trim().length < 10" (click)="generate()">
-              {{ busy() ? 'Claude is designing…' : 'Generate' }}
-            </button>
-          </div>
-        </div>
-      </div>
-    }
+        </ul>
+      }
+    </section>
   `,
 })
 export class WorkflowsPage {
@@ -132,11 +137,15 @@ export class WorkflowsPage {
     });
   }
 
-  protected stepTypes(wf: WorkflowListItem): string[] {
+  protected stepTypes(wf: WorkflowListItem) {
     return [...new Set(wf.definition.steps.map((s) => s.type))];
   }
 
-  protected openRun(wf: WorkflowListItem): void {
+  protected toggleRun(wf: WorkflowListItem): void {
+    if (this.runTarget()?.id === wf.id) {
+      this.runTarget.set(null);
+      return;
+    }
     this.runInput = JSON.stringify(wf.definition.exampleInput ?? {}, null, 2);
     this.runError.set('');
     this.runTarget.set(wf);
@@ -172,7 +181,7 @@ export class WorkflowsPage {
         this.busy.set(false);
         this.aiOpen.set(false);
         sessionStorage.setItem('wfo.draft', JSON.stringify(draft));
-        this.toast.success(draft.mock ? 'Draft generated (mock mode - set ANTHROPIC_API_KEY for real designs)' : 'Claude drafted a workflow - review and save it');
+        this.toast.success(draft.mock ? 'Draft generated (mock mode: set ANTHROPIC_API_KEY for real designs)' : 'Claude drafted a workflow. Review it, then save.');
         this.router.navigate(['/workflows/new'], { queryParams: { draft: 1 } });
       },
       error: (e) => {

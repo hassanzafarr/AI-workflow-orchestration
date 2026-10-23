@@ -1,7 +1,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 export function formatDuration(ms: number | null | undefined): string {
-  if (ms === null || ms === undefined || Number.isNaN(ms)) return '-';
+  if (ms === null || ms === undefined || Number.isNaN(ms)) return '–';
   if (ms < 1000) return `${Math.round(ms)}ms`;
   const s = ms / 1000;
   if (s < 60) return `${s.toFixed(s < 10 ? 1 : 0)}s`;
@@ -16,7 +16,7 @@ export function elapsed(start: string | null, end?: string | null, now = Date.no
 }
 
 export function timeAgo(iso: string | null | undefined, now = Date.now()): string {
-  if (!iso) return '-';
+  if (!iso) return '–';
   const diff = Math.max(0, now - new Date(iso).getTime()) / 1000;
   if (diff < 5) return 'just now';
   if (diff < 60) return `${Math.floor(diff)}s ago`;
@@ -50,6 +50,6 @@ export class PrettyJsonPipe implements PipeTransform {
 @Pipe({ name: 'short' })
 export class ShortIdPipe implements PipeTransform {
   transform(id: string | null | undefined): string {
-    return id ? id.slice(0, 8) : '-';
+    return id ? id.slice(0, 8) : '–';
   }
 }

@@ -5,58 +5,67 @@ import { RUN_STATUSES, RunStatus, RunSummary } from '../core/models';
 import { RealtimeService } from '../core/realtime.service';
 import { ToastService } from '../core/toast.service';
 import { AgoPipe, DurationPipe, elapsed, ShortIdPipe } from '../shared/format';
+import { Icon } from '../shared/icon';
 import { StatusBadge } from '../shared/status-badge';
 
 const PAGE = 50;
 
 @Component({
   selector: 'app-runs',
-  imports: [RouterLink, StatusBadge, AgoPipe, DurationPipe, ShortIdPipe],
+  imports: [RouterLink, StatusBadge, Icon, AgoPipe, DurationPipe, ShortIdPipe],
   template: `
     <div class="page-head">
       <div>
         <h1>Runs</h1>
-        <p class="muted">{{ total() }} runs{{ workflowId() ? ' for this workflow' : '' }} · updates stream in live.</p>
+        <p class="lede">{{ total() }} {{ total() === 1 ? 'run' : 'runs' }}{{ workflowId() ? ' of this workflow' : '' }}. New runs and status changes stream in live.</p>
       </div>
     </div>
 
-    <div class="filters">
-      <button class="chip" [class.active]="!status()" (click)="setStatus(null)">all</button>
-      @for (s of statuses; track s) {
-        <button class="chip" [class.active]="status() === s" (click)="setStatus(s)">{{ s }}</button>
-      }
+    <div class="toolbar">
+      <div class="segmented" role="group" aria-label="Filter by status">
+        <button [class.active]="!status()" [attr.aria-pressed]="!status()" (click)="setStatus(null)">All</button>
+        @for (s of statuses; track s) {
+          <button [class.active]="status() === s" [attr.aria-pressed]="status() === s" (click)="setStatus(s)">{{ s[0].toUpperCase() + s.slice(1) }}</button>
+        }
+      </div>
       @if (workflowId()) {
-        <button class="chip active" (click)="clearWorkflow()">workflow filter ✕</button>
+        <button class="chip active" (click)="clearWorkflow()">One workflow <app-icon name="close" /><span class="sr-only">Clear workflow filter</span></button>
       }
     </div>
 
-    <div class="card flush">
-      <table class="table">
-        <thead>
-          <tr><th>Run</th><th>Workflow</th><th>Status</th><th>Progress</th><th>Trigger</th><th>Started</th><th>Duration</th></tr>
-        </thead>
-        <tbody>
-          @for (run of visible(); track run.id) {
-            <tr class="clickable" (click)="open(run.id)">
-              <td class="mono"><a [routerLink]="['/runs', run.id]">#{{ run.id | short }}</a></td>
-              <td>{{ run.workflowName }} <span class="muted small">v{{ run.workflowVersion }}</span></td>
-              <td><app-status [status]="run.status" /></td>
-              <td class="w-progress">
-                <div class="progress"><span class="p-done" [style.width.%]="pct(run.progress.done, run.progress.total)"></span><span class="p-run" [style.width.%]="pct(run.progress.running, run.progress.total)"></span><span class="p-fail" [style.width.%]="pct(run.progress.failed, run.progress.total)"></span></div>
-                <span class="small muted">{{ run.progress.done }}/{{ run.progress.total }}</span>
-              </td>
-              <td><span class="tag">{{ run.trigger }}</span></td>
-              <td class="small">{{ run.createdAt | ago: tick() }}</td>
-              <td class="small mono">{{ duration(run) | duration }}</td>
-            </tr>
-          } @empty {
-            <tr><td colspan="7" class="empty">{{ loading() ? 'Loading…' : 'No runs match.' }}</td></tr>
-          }
-        </tbody>
-      </table>
-    </div>
+    <section class="panel flush">
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+            <tr><th>Run</th><th>Status</th><th>Progress</th><th class="hide-sm">Trigger</th><th class="hide-sm">Started</th><th class="num hide-sm">Duration</th></tr>
+          </thead>
+          <tbody>
+            @for (run of visible(); track run.id) {
+              <tr class="clickable" (click)="open(run.id)">
+                <td class="run-cell">
+                  <a class="strong-link" [routerLink]="['/runs', run.id]" (click)="$event.stopPropagation()">{{ run.workflowName }}</a>
+                  <div class="muted small"><span class="mono">#{{ run.id | short }}</span> · v{{ run.workflowVersion }}</div>
+                </td>
+                <td><app-status [status]="run.status" /></td>
+                <td class="w-progress">
+                  <div class="progress" role="img" [attr.aria-label]="run.progress.done + ' of ' + run.progress.total + ' steps done'">
+                    <span class="p-done" [style.width.%]="pct(run.progress.done, run.progress.total)"></span><span class="p-run" [style.width.%]="pct(run.progress.running, run.progress.total)"></span><span class="p-fail" [style.width.%]="pct(run.progress.failed, run.progress.total)"></span>
+                  </div>
+                  <span class="small muted num">{{ run.progress.done }}/{{ run.progress.total }}</span>
+                </td>
+                <td class="hide-sm"><span class="tag">{{ run.trigger }}</span></td>
+                <td class="small hide-sm">{{ run.createdAt | ago: tick() }}</td>
+                <td class="small num hide-sm">{{ duration(run) | duration }}</td>
+              </tr>
+            } @empty {
+              <tr><td colspan="6" class="empty">{{ loading() ? 'Loading runs…' : status() ? 'No ' + status() + ' runs.' : 'No runs yet. Start one from Workflows.' }}</td></tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
     @if (rows().length < total()) {
-      <div class="center"><button class="btn ghost" (click)="loadMore()">Load more</button></div>
+      <div class="center"><button class="btn" (click)="loadMore()">Load more</button></div>
     }
   `,
 })
@@ -76,6 +85,7 @@ export class RunsPage {
   protected readonly total = signal(0);
   protected readonly loading = signal(true);
   protected readonly tick = signal(0);
+  private readonly now = signal(Date.now());
 
   /** Server page merged with live run.updated events; new runs appear at the top. */
   protected readonly visible = computed(() => {
@@ -100,7 +110,10 @@ export class RunsPage {
       this.workflowId();
       this.load(true);
     });
-    const timer = setInterval(() => this.tick.update((t) => t + 1), 1000);
+    const timer = setInterval(() => {
+      this.now.set(Date.now());
+      this.tick.update((t) => t + 1);
+    }, 1000);
     inject(DestroyRef).onDestroy(() => clearInterval(timer));
   }
 
@@ -109,8 +122,7 @@ export class RunsPage {
   }
 
   protected duration(run: RunSummary): number | null {
-    this.tick();
-    return elapsed(run.startedAt, run.finishedAt);
+    return elapsed(run.startedAt, run.finishedAt, this.now());
   }
 
   protected setStatus(status: RunStatus | null): void {

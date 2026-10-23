@@ -10,6 +10,7 @@ import { QueueSample } from '../core/realtime.service';
       @for (line of grid(); track line.y) {
         <line class="chart-grid" x1="0" [attr.x2]="width" [attr.y1]="line.y" [attr.y2]="line.y" />
       }
+      <line class="chart-base" x1="0" [attr.x2]="width" [attr.y1]="height" [attr.y2]="height" />
       @for (b of bars(); track b.x) {
         <rect class="bar-ok" [attr.x]="b.x" [attr.y]="b.yOk" [attr.width]="b.w" [attr.height]="b.hOk"><title>{{ b.label }}</title></rect>
         @if (b.hFail > 0) {
@@ -18,8 +19,8 @@ import { QueueSample } from '../core/realtime.service';
       }
     </svg>
     <div class="chart-legend">
-      <span><i class="dot ok"></i>succeeded</span><span><i class="dot fail"></i>failed</span>
-      <span class="muted">peak {{ peak() }}/min</span>
+      <span><i class="key key-done"></i>Succeeded</span><span><i class="key key-fail"></i>Failed</span>
+      <span class="muted num">Peak {{ peak() }}/min</span>
     </div>
   `,
 })
@@ -55,13 +56,14 @@ export class ThroughputChart {
   selector: 'app-scaling-chart',
   template: `
     <svg class="chart" [attr.viewBox]="'0 0 ' + width + ' ' + height" preserveAspectRatio="none" role="img" aria-label="Queue depth and workers over time">
+      <line class="chart-base" x1="0" [attr.x2]="width" [attr.y1]="height" [attr.y2]="height" />
       <path class="area-queue" [attr.d]="paths().area" />
       <path class="line-workers" [attr.d]="paths().workers" />
     </svg>
     <div class="chart-legend">
-      <span><i class="dot queue"></i>waiting + active steps (max {{ paths().maxQueue }})</span>
-      <span><i class="dot workers"></i>workers (max {{ paths().maxWorkers }})</span>
-      <span class="muted">last 10 min</span>
+      <span><i class="key key-queue"></i>Waiting + active steps <span class="num">(max {{ paths().maxQueue }})</span></span>
+      <span><i class="key key-workers"></i>Workers <span class="num">(max {{ paths().maxWorkers }})</span></span>
+      <span class="muted">Last 10 min</span>
     </div>
   `,
 })
