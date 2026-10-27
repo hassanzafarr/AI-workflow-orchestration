@@ -51,7 +51,7 @@ export const config = {
   llm: {
     // auto = live when Claude credentials exist, otherwise a local mock so the platform runs offline.
     mode: (llmModeRaw === "auto" ? (hasClaudeCredentials() ? "live" : "mock") : llmModeRaw) as "live" | "mock",
-    model: str("CLAUDE_MODEL", "claude-opus-5-5"),
+    model: str("CLAUDE_MODEL", "claude-haiku-5-5"),
     maxTokens: int("CLAUDE_MAX_TOKENS", 16000),
   },
 

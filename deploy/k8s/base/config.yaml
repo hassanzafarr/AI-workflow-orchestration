@@ -9,7 +9,7 @@ data:
   LOG_FORMAT: json
   REDIS_URL: redis://wfo-redis:6379
   LLM_MODE: auto
-  CLAUDE_MODEL: claude-opus-5-5
+  CLAUDE_MODEL: claude-haiku-5-5
   WORKER_CONCURRENCY: "4"
   STEP_DEFAULT_TIMEOUT_MS: "600000"
   K8S_NAMESPACE: wfo

@@ -10,7 +10,7 @@ x-backend-env: &backend-env
   DATABASE_URL: postgres://wfo:wfo@postgres:5432/wfo
   REDIS_URL: redis://redis:6379
   LLM_MODE: ${LLM_MODE:-auto}
-  CLAUDE_MODEL: ${CLAUDE_MODEL:-claude-opus-5-5}
+  CLAUDE_MODEL: ${CLAUDE_MODEL:-claude-haiku-5-5}
   ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
   API_TOKEN: ${API_TOKEN:-}
 
