@@ -13,9 +13,6 @@ any point.
 ![Kubernetes](https://img.shields.io/badge/Kubernetes-KEDA-326ce5?logo=kubernetes&logoColor=white)
 ![Claude API](https://img.shields.io/badge/Claude-API-d97757?logo=anthropic&logoColor=white)
 
-[![Orchestrator demo: a workflow run streams LLM output, stops at an approval gate, is approved, a load test fans out across three workers, and the whole line is paused and resumed](docs/media/orchestrator-demo.gif)](docs/media/orchestrator-demo.mp4)
-
-<sub>A one-minute narrated walkthrough recorded from the running app. [Watch the full video with sound](docs/media/orchestrator-demo.mp4).</sub>
 
 
 
