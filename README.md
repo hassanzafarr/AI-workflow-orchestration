@@ -1,282 +1,128 @@
-# AI Workflow Orchestration Platform
+# Orchestrator
 
-A central dashboard to manage, monitor and scale automated AI workflows. Workflows are DAGs of
-steps (Claude prompts, HTTP calls, transforms, delays, human approvals). An Angular dashboard
-shows every run live, streams Claude's output token by token, and lets operators override
-anything: pause, resume, cancel, retry, skip, approve or reject, pause all execution, or move
-the autoscaler's bounds. The backend runs as Kubernetes microservices; worker pods scale on queue
-depth during heavy jobs and drain gracefully when load drops.
+**A live control room for AI workflows.** Chain Claude prompts, API calls and human sign-offs
+into one workflow. Watch every run move across a pool of workers in real time, and step in at
+any point.
 
-**Stack:** Angular 21 (standalone, signals, zoneless) · Node.js 22 + TypeScript · Express 5 +
-WebSocket · BullMQ on Redis · PostgreSQL · Claude API (`@anthropic-ai/sdk`) · Docker ·
-Kubernetes + KEDA.
-
-## Demo
+[![CI](https://github.com/hassanzafarr/AI-workflow-orchestration/actions/workflows/ci.yml/badge.svg)](https://github.com/hassanzafarr/AI-workflow-orchestration/actions/workflows/ci.yml)
+![Angular 21](https://img.shields.io/badge/Angular-21-dd0031?logo=angular&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178c6?logo=typescript&logoColor=white)
+![Node.js 22](https://img.shields.io/badge/Node.js-22-5fa04e?logo=nodedotjs&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169e1?logo=postgresql&logoColor=white)
+![Redis](https://img.shields.io/badge/Redis-BullMQ-dc382d?logo=redis&logoColor=white)
+![Kubernetes](https://img.shields.io/badge/Kubernetes-KEDA-326ce5?logo=kubernetes&logoColor=white)
+![Claude API](https://img.shields.io/badge/Claude-API-d97757?logo=anthropic&logoColor=white)
 
 [![Orchestrator demo: a workflow run streams LLM output, stops at an approval gate, is approved, a load test fans out across three workers, and the whole line is paused and resumed](docs/media/orchestrator-demo.gif)](docs/media/orchestrator-demo.mp4)
 
-A 50-second walkthrough, recorded live from a local stack: three workers, the seeded demo
-workflows, and LLM steps in mock mode. Watch the [full-quality MP4](docs/media/orchestrator-demo.mp4).
+<sub>50-second walkthrough recorded from the running app. [Watch the full-quality video](docs/media/orchestrator-demo.mp4).</sub>
 
-1. The andon board across the top keeps one lamp per workflow. Only what needs a person lights up.
-2. One click starts the AI Content Pipeline. Research and outline run in parallel, and Claude's
-   output streams into the step inspector token by token.
-3. The editorial approval gate holds the run and lights the board yellow. Approving it, with a
-   comment that goes to the audit log, lets the run finish.
-4. The 12-way load test fans out across the worker pool, and the worker slots light up as they
-   pull steps.
-5. "Pause all" stops the whole line (the board turns red), and resume lets the queued work flow again.
+## The problem it solves
 
-The dashboard's visual system (lamp colours, type, components) is documented in
-[DESIGN.md](DESIGN.md).
+Teams are putting AI into real business processes: researching a lead, drafting an article,
+triaging support tickets, enriching thousands of records. One prompt is rarely enough. These
+processes need several steps that depend on each other, retries when a call fails, a person to
+approve before anything goes out, and enough capacity to absorb a sudden spike of work.
 
-## Architecture
+Orchestrator runs those processes and gives operators one screen to see what is happening and
+take control of it.
 
+## What you can do with it
+
+- **Build workflows from steps.** Mix Claude prompts, HTTP calls, data transforms, timed waits
+  and human approvals. Or describe what you want in plain English and let Claude draft the
+  workflow for you.
+- **Watch runs live.** Each step lights up as it starts. Claude's output streams in word by word,
+  and steps that don't depend on each other run in parallel.
+- **Stay in control.** Pause, cancel or retry a run. Retry or skip a single step. Approve or
+  reject at human checkpoints, or stop all execution with one button during an incident. Every
+  action is recorded in an audit log with the operator's name.
+- **Understand failures.** "Ask Claude why" reads a failed step's configuration and logs and
+  explains what went wrong.
+- **Scale with demand.** Work spreads across a pool of workers. On Kubernetes the pool grows as the
+  queue fills and shrinks once it drains.
+
+## Engineering highlights
+
+- **Crash-safe by design.** Every state change is a locked database transaction, so any number of
+  API servers and workers can drive the same run safely, and stale work from before a pause or
+  retry is recognised and dropped. If a worker dies mid-task, the work is detected and picked up
+  again elsewhere.
+- **Real-time from end to end.** A WebSocket event stream drives the whole dashboard, including
+  Claude's tokens streamed from the API to the browser as they are generated.
+- **Autoscaling that is safe to shrink.** Workers scale on queue depth (KEDA on Kubernetes) and
+  finish their in-flight steps before shutting down.
+- **Human-in-the-loop built in.** Approval is a step type of its own: the run waits for a person,
+  and their decision and comment go into the audit log.
+- **Runs without an API key.** A mock mode produces realistic, streamed output, so the platform
+  can be demoed and load-tested for free. The demo above was recorded this way.
+- **Tested and shipped like production code.** It has unit tests, integration tests against real
+  Postgres and Redis, and an end-to-end smoke test. CI builds the Docker images and validates the
+  Kubernetes manifests on every push.
+
+## How it works
+
+```mermaid
+flowchart LR
+  B[Dashboard<br/>Angular] <-->|REST + live events| A[API service<br/>Node.js]
+  A -->|queue steps| R[(Redis<br/>queue + events)]
+  R --> W[Worker pool]
+  W -->|progress, logs, tokens| R
+  W -->|LLM steps| C[Claude API]
+  W -->|HTTP steps| H[External APIs]
+  A <--> P[(PostgreSQL<br/>runs, steps, audit log)]
+  W <--> P
+  K[KEDA] -. scales on queue depth .-> W
 ```
-                   ┌─────────────────────────── Kubernetes namespace: wfo ───────────────────────────┐
- Browser           │                                                                                 │
- Angular  ──HTTP──▶│ Ingress ─┬─ /      ─▶ wfo-web (nginx, static Angular)                           │
- dashboard ◀──WS───│          └─ /api,/ws ─▶ wfo-api  ×N  (REST, WebSocket fan-out, overrides,       │
-                   │                         │   ▲           reconciler, K8s scaling API)            │
-                   │                 enqueue │   │ pub/sub events                                    │
-                   │                         ▼   │                                                   │
-                   │                     Redis (BullMQ queue `tasks` + `triggers`, pub/sub, heartbeats)│
-                   │                         │   ▲                                                   │
-                   │                 consume │   │ results, logs, token stream, heartbeats           │
-                   │                         ▼   │                                                   │
-                   │   KEDA ──scales──▶ wfo-worker ×1..30 ──▶ Claude API / HTTP targets              │
-                   │  (bull:tasks:wait)       │                                                      │
-                   │                          ▼                                                      │
-                   │                     PostgreSQL (workflows, runs, tasks, logs, audit log)        │
-                   └─────────────────────────────────────────────────────────────────────────────────┘
-```
 
-| Service | What it does | Scales on |
-|---|---|---|
-| `wfo-api` | REST API, WebSocket event stream, manual overrides, AI workflow generation, scaling overrides via the Kubernetes API, reconciler that recovers lost work | replicas (stateless) |
-| `wfo-worker` | Pulls step executions from the queue, runs executors (Claude, HTTP, ...), streams logs/tokens, heart-beats | **KEDA on queue depth** (+ CPU) |
-| `wfo-web` | nginx serving the Angular dashboard | replicas |
-| Postgres | Source of truth for all state | managed DB in prod |
-| Redis | BullMQ queues, pub/sub, worker registry | managed Redis in prod |
+The dashboard talks to a stateless API service. When a run starts, the API queues every step
+that is ready, and workers pick them up in parallel. Workers report progress back as it happens,
+so the dashboard always shows the current state. PostgreSQL is the source of truth. The API and
+the workers are separate services built from the same code, so each scales on its own.
 
-API and worker are two deployables built from one image (`backend/`), so they share the engine
-code but deploy and scale independently.
+For the full architecture, execution model, configuration and Kubernetes deployment, see the
+**[technical documentation](docs/TECHNICAL.md)**.
 
-### How a run executes
+## Built with
 
-1. `POST /api/workflows/:id/runs` snapshots the workflow definition into a run and creates one
-   task per step (`pending`).
-2. The engine **advances** the run: every pending step whose dependencies succeeded (or were
-   skipped) becomes `queued` and is pushed to BullMQ. Steps without a shared dependency run in
-   parallel on different workers.
-3. A worker **claims** the task (`running`), renders `{{templates}}` against the run input and
-   upstream outputs, executes it, and **completes** it. Failures retry automatically with
-   exponential backoff (`retries` per step); exhausted retries fail the run fast and cancel
-   the rest.
-4. Every transition runs in a Postgres transaction holding the run's row lock, so any number of
-   API replicas and workers can drive the same run safely. Side effects (enqueue, events) are
-   flushed after commit.
-5. Each re-queue bumps a task `generation`; a stale queue job (from before a pause, cancel or
-   skip) is recognised and dropped. A reconciler re-queues tasks whose job vanished (crash
-   between commit and enqueue) or whose worker died after BullMQ gave up on the stalled job.
-
-### Step types
-
-| Type | Config | Output |
-|---|---|---|
-| `llm` | `prompt`, `system?`, `model?`, `maxTokens?`, `effort?`, `outputSchema?` (JSON Schema → structured output) | `{ text, data?, model, usage }` |
-| `http` | `url`, `method?`, `headers?`, `body?`, `expectStatus?` | `{ status, headers, body }` |
-| `transform` | `output` (any JSON with templates) | the rendered value |
-| `delay` | `ms`, `failRate?` (simulate flaky work) | `{ sleptMs }` |
-| `approval` | `message` | waits for an operator; `{ approved, by, comment }` |
-
-Every step also takes `dependsOn`, `retries`, `timeoutMs` and `when` (a template; falsy skips the
-step, which is how branching works). Templates: `{{input.x}}`, `{{steps.<id>.output.text}}`,
-`{{steps.<id>.output.data.items[0]}}`, `{{run.id}}`. They are property paths, never evaluated
-as code.
-
-### Claude integration
-
-* LLM steps stream from the Claude API (`claude-haiku-5-5` by default, `CLAUDE_MODEL` to change)
-  and the dashboard shows the tokens live. `outputSchema` uses structured outputs so downstream
-  steps get typed JSON. Server-side refusal fallbacks are enabled for models that support them.
-* **Generate with Claude** turns a plain-English description into a validated workflow DAG
-  (structured output, one self-repair round on validation errors).
-* **Ask Claude why** on a failed step diagnoses the error from its config and logs.
-* Without `ANTHROPIC_API_KEY` everything runs in **mock mode**: deterministic local output,
-  streamed like the real thing, so the platform can be demoed and load-tested for free.
-
-### Manual overrides
-
-| Scope | Overrides |
+| Area | Technology |
 |---|---|
-| Run | pause (finish running steps, start nothing new) · resume · cancel (aborts in-flight steps on workers) · retry failed steps |
-| Step | retry · skip (continue downstream) · approve / reject with comment · ask Claude for a diagnosis |
-| Platform | pause / resume all execution (BullMQ global pause) · move autoscaler min/max (KEDA ScaledObject or HPA) or set replicas |
+| Frontend | Angular 21 (standalone components, signals), TypeScript |
+| Backend | Node.js 22, Express 5, WebSocket |
+| Jobs and queue | BullMQ on Redis |
+| Database | PostgreSQL |
+| AI | Claude API via the Anthropic SDK, with streaming and structured outputs |
+| Infrastructure | Docker, Kubernetes, KEDA autoscaling, GitHub Actions CI |
 
-Every override is written to the audit log with the operator name from the dashboard settings.
+## Try it locally
 
-## Run it locally
-
-Prerequisites: Node.js 22, Docker.
+You need Node.js 22 and Docker.
 
 ```bash
 npm install
+npm run setup   # install the backend and dashboard dependencies
+npm run infra   # start PostgreSQL and Redis in Docker
+npm run dev     # start the API, a worker and the dashboard
 ```
 
-```bash
-npm run setup
-```
+Open http://localhost:4200. Four demo workflows are ready to run. The app starts in mock mode;
+set `ANTHROPIC_API_KEY` to call the real Claude API.
 
-```bash
-npm run infra
-```
+Prefer containers? Run `docker compose up --build --scale worker=3` and open http://localhost:8080.
 
-```bash
-npm run dev
-```
-
-Open http://localhost:4200. Four demo workflows are seeded on first start (content pipeline with
-an approval gate, a 12-way parallel load test, ticket triage with structured output and a
-conditional branch, and a scheduled health check). To call the real Claude API:
-
-```bash
-export ANTHROPIC_API_KEY=sk-ant-...
-```
-
-Compose datastores listen on host ports **55432** (Postgres) and **56379** (Redis) to avoid
-clashing with local installs; override with `PG_HOST_PORT` / `REDIS_HOST_PORT` and
-`DATABASE_URL` / `REDIS_URL`.
-
-### Whole stack in Docker
-
-```bash
-docker compose up --build --scale worker=3
-```
-
-Dashboard on http://localhost:8080, API on http://localhost:3000.
-
-## Tests
-
-```bash
-npm test
-```
-
-Unit tests: DAG validation (cycles, references, per-type config), templating, mock structured
-output.
-
-```bash
-npm run test:integration
-```
-
-Engine integration tests against real Postgres + Redis (`npm run infra` first; they use the
-`wfo_test` database and Redis DB 15): diamond DAG data flow, retries + fail-fast + skip
-override, approval approve/reject, `when` branching, pause/resume with stale-job rejection,
-cancel + retry, audit trail.
-
-```bash
-npm run smoke
-```
-
-End-to-end against a running stack: every demo workflow, approvals, overrides, metrics, AI
-generation, and the WebSocket event stream.
-
-```bash
-npm run load -- 20
-```
-
-Floods the queue with parallel batch runs; watch **Workers & scaling** react.
-
-## Deploy to Kubernetes
-
-Manifests are Kustomize: `deploy/k8s/base` (API, worker, web, ingress, RBAC, PDBs) plus
-components for `datastores` (in-cluster Postgres/Redis), `keda` (queue-depth autoscaling) and
-`hpa` (CPU fallback), combined by `overlays/local` and `overlays/production`.
-
-```bash
-helm repo add kedacore https://kedacore.github.io/charts
-```
-
-```bash
-helm install keda kedacore/keda --namespace keda --create-namespace
-```
-
-```bash
-docker build -t wfo-backend:local ./backend
-```
-
-```bash
-docker build -t wfo-web:local ./web
-```
-
-```bash
-kubectl apply -k deploy/k8s/overlays/local
-```
-
-The dashboard is served at http://wfo.localhost through ingress-nginx (or
-`kubectl -n wfo port-forward svc/wfo-web 8080:80`). Set your Claude key with:
-
-```bash
-kubectl -n wfo create secret generic wfo-secrets --from-literal=ANTHROPIC_API_KEY=sk-ant-... --from-literal=DATABASE_URL=postgres://wfo:wfo-local@wfo-postgres:5432/wfo --from-literal=POSTGRES_PASSWORD=wfo-local --from-literal=API_TOKEN= --dry-run=client -o yaml | kubectl apply -f -
-```
-
-No KEDA? Swap `components/keda` for `components/hpa` in the overlay.
-
-### How scaling works
-
-* **Pods:** KEDA watches the BullMQ wait list (`bull:tasks:wait`) and targets ~8 waiting steps
-  per worker (2× `WORKER_CONCURRENCY`). Scale-up is immediate (+100% or +5 pods per 15 s);
-  scale-down waits 3 minutes and halves at most once a minute so bursty DAGs don't thrash.
-* **Nodes:** workers prefer (and tolerate) a dedicated `wfo.dev/pool=workers` node pool. When new
-  worker pods don't fit, the cluster autoscaler or Karpenter adds nodes to that pool, and removes
-  them once the pods scale back in.
-* **Safe scale-in:** SIGTERM stops a worker from taking new jobs and waits for in-flight steps
-  (`terminationGracePeriodSeconds: 300`). Anything still running when the pod dies is recovered
-  by BullMQ stall detection and the API reconciler on another pod. PodDisruptionBudgets cap
-  voluntary disruption.
-* **Overrides:** the API's service account may only `get`/`patch` the worker Deployment scale,
-  its HPA and its ScaledObject. The dashboard uses that to pre-warm workers before a known batch
-  (raise min) or cap spend / protect a rate-limited API (lower max).
-
-## Configuration
-
-| Variable | Default | Used by |
-|---|---|---|
-| `DATABASE_URL` | `postgres://wfo:wfo@127.0.0.1:55432/wfo` | api, worker |
-| `REDIS_URL` | `redis://127.0.0.1:56379` | api, worker |
-| `ANTHROPIC_API_KEY` | - | api, worker |
-| `LLM_MODE` | `auto` (live if a key is set) | api, worker |
-| `CLAUDE_MODEL` | `claude-haiku-5-5` | api, worker |
-| `API_TOKEN` | - (auth off) | api |
-| `WORKER_CONCURRENCY` | `4` | worker |
-| `STEP_DEFAULT_TIMEOUT_MS` | `600000` | worker |
-| `STEP_RETRY_BACKOFF_MS` | `2000` | worker |
-| `HTTP_STEP_ALLOWED_HOSTS` | - (any) | worker |
-| `SCALER_KIND` | `keda` in-cluster, `none` locally | api |
-| `SEED_DEMO` | `true` | api |
-
-## Project layout
+## Project structure
 
 ```
-backend/            Node.js + TypeScript (one image, two services)
-  src/core/         engine (state machine), DAG validation, templates, Postgres, BullMQ, pub/sub
-  src/executors/    llm, http, transform, delay, approval
-  src/ai/           Claude client, workflow generator, failure diagnosis
-  src/api/          REST routes, WebSocket fan-out, Kubernetes scaler, seed data
-  src/worker/       queue consumer, heartbeats, graceful drain
-  test/             unit + engine integration tests
-web/                Angular dashboard (overview, workflows + editor, runs, run detail, workers, audit)
-deploy/k8s/         Kustomize base, components (datastores, keda, hpa), overlays (local, production)
-scripts/            smoke and load tests
-docs/media/         demo video (MP4) and the README GIF
-docker-compose.yml  local stack
-DESIGN.md           dashboard design system; PRODUCT.md holds the product context
+backend/   API and worker services: workflow engine, queue, Claude integration
+web/       Angular dashboard
+deploy/    Kubernetes manifests (Kustomize, KEDA autoscaling)
+scripts/   end-to-end smoke test and load generator
+docs/      technical documentation and demo media
 ```
 
-## Security notes
+The dashboard's design system is documented in [DESIGN.md](DESIGN.md).
 
-* Set `API_TOKEN` anywhere beyond your laptop: it guards every `/api` route and the WebSocket.
-  The dashboard asks for it on the first 401.
-* `http` steps can call any URL by default; set `HTTP_STEP_ALLOWED_HOSTS` to restrict them
-  (SSRF protection) when workflow authors aren't fully trusted.
-* Containers run as non-root with read-only root filesystems and all capabilities dropped.
+## Author
+
+Built by **Hassan Zafar**. [Portfolio](https://hassan-zafar-portfolio.vercel.app) ·
+[GitHub](https://github.com/hassanzafarr)
