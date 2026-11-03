@@ -15,7 +15,7 @@ any point.
 
 [![Orchestrator demo: a workflow run streams LLM output, stops at an approval gate, is approved, a load test fans out across three workers, and the whole line is paused and resumed](docs/media/orchestrator-demo.gif)](docs/media/orchestrator-demo.mp4)
 
-<sub>50-second walkthrough recorded from the running app. [Watch the full-quality video](docs/media/orchestrator-demo.mp4).</sub>
+<sub>A one-minute narrated walkthrough recorded from the running app. [Watch the full video with sound](docs/media/orchestrator-demo.mp4).</sub>
 
 ## The problem it solves
 
