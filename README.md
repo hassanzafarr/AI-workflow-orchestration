@@ -11,6 +11,25 @@ depth during heavy jobs and drain gracefully when load drops.
 WebSocket · BullMQ on Redis · PostgreSQL · Claude API (`@anthropic-ai/sdk`) · Docker ·
 Kubernetes + KEDA.
 
+## Demo
+
+[![Orchestrator demo: a workflow run streams LLM output, stops at an approval gate, is approved, a load test fans out across three workers, and the whole line is paused and resumed](docs/media/orchestrator-demo.gif)](docs/media/orchestrator-demo.mp4)
+
+A 50-second walkthrough, recorded live from a local stack: three workers, the seeded demo
+workflows, and LLM steps in mock mode. Watch the [full-quality MP4](docs/media/orchestrator-demo.mp4).
+
+1. The andon board across the top keeps one lamp per workflow. Only what needs a person lights up.
+2. One click starts the AI Content Pipeline. Research and outline run in parallel, and Claude's
+   output streams into the step inspector token by token.
+3. The editorial approval gate holds the run and lights the board yellow. Approving it, with a
+   comment that goes to the audit log, lets the run finish.
+4. The 12-way load test fans out across the worker pool, and the worker slots light up as they
+   pull steps.
+5. "Pause all" stops the whole line (the board turns red), and resume lets the queued work flow again.
+
+The dashboard's visual system (lamp colours, type, components) is documented in
+[DESIGN.md](DESIGN.md).
+
 ## Architecture
 
 ```
@@ -249,7 +268,9 @@ backend/            Node.js + TypeScript (one image, two services)
 web/                Angular dashboard (overview, workflows + editor, runs, run detail, workers, audit)
 deploy/k8s/         Kustomize base, components (datastores, keda, hpa), overlays (local, production)
 scripts/            smoke and load tests
+docs/media/         demo video (MP4) and the README GIF
 docker-compose.yml  local stack
+DESIGN.md           dashboard design system; PRODUCT.md holds the product context
 ```
 
 ## Security notes
