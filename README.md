@@ -17,6 +17,12 @@ any point.
 
 <sub>A one-minute narrated walkthrough recorded from the running app. [Watch the full video with sound](docs/media/orchestrator-demo.mp4).</sub>
 
+
+
+https://github.com/user-attachments/assets/6ebfd659-aa8d-43cc-aae3-5ec5e278dd2c
+
+
+
 ## The problem it solves
 
 Teams are putting AI into real business processes: researching a lead, drafting an article,
