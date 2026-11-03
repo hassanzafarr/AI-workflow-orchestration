@@ -78,7 +78,7 @@ as code.
 
 ### Claude integration
 
-* LLM steps stream from the Claude API (`claude-opus-5-5` by default, `CLAUDE_MODEL` to change)
+* LLM steps stream from the Claude API (`claude-haiku-5-5` by default, `CLAUDE_MODEL` to change)
   and the dashboard shows the tokens live. `outputSchema` uses structured outputs so downstream
   steps get typed JSON. Server-side refusal fallbacks are enabled for models that support them.
 * **Generate with Claude** turns a plain-English description into a validated workflow DAG
@@ -227,7 +227,7 @@ No KEDA? Swap `components/keda` for `components/hpa` in the overlay.
 | `REDIS_URL` | `redis://127.0.0.1:56379` | api, worker |
 | `ANTHROPIC_API_KEY` | - | api, worker |
 | `LLM_MODE` | `auto` (live if a key is set) | api, worker |
-| `CLAUDE_MODEL` | `claude-opus-5-5` | api, worker |
+| `CLAUDE_MODEL` | `claude-haiku-5-5` | api, worker |
 | `API_TOKEN` | - (auth off) | api |
 | `WORKER_CONCURRENCY` | `4` | worker |
 | `STEP_DEFAULT_TIMEOUT_MS` | `600000` | worker |
