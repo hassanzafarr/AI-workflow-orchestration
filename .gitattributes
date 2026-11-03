@@ -1,2 +1,6 @@
 # Keep LF everywhere so Dockerfiles, nginx templates and scripts behave the same on every OS.
 * text=auto eol=lf
+
+# Media for the README demo.
+*.mp4 binary
+*.gif binary
