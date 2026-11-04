@@ -427,6 +427,8 @@ DAG nodes are 3px-cornered plates with a 10px lamp, a 13.5px title and a Semi Co
 ### Dialog and toasts
 The settings dialog is a Work Panel at 480px max with the Float shadow. Toasts stack bottom-right on Ink with Work Panel text and a lit lamp (blue info, green success, red error), rising in over 0.22s.
 
+The onboarding tour is the same dialog at 620px with no padding. Each of its four slides opens on a board-coloured band carrying a miniature of the real parts it explains (board cells, the lamp legend, the approval band and overrides, a station row that lights in sequence), then a title, one or two sentences, and a footer. Progress is a row of 14px square markers joined by short rules like a station row: finished steps graphite, the current step Machine Green, the rest hollow; markers never use lamp hues. Skip, Back and Next sit at the right (a full-width Next first on phones), and the last slide's primary action starts the real demo run. It opens by itself once per browser and again from Quick tour at the foot of the rail.
+
 ### Icons
 Lucide, one stroke family at 1.85 stroke width, sized 1em to the text beside them and coloured by currentColor. Step types have fixed icons: message for llm, globe for http, braces for transform, timer for delay, hand for approval.
 

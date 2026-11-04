@@ -3,16 +3,18 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { ApiService } from './core/api.service';
 import { LineService, WorkflowLamp } from './core/line.service';
+import { OnboardingService } from './core/onboarding.service';
 import { PlatformInfo } from './core/models';
 import { RealtimeService } from './core/realtime.service';
 import { SettingsService } from './core/settings.service';
 import { ToastService } from './core/toast.service';
 import { AgoPipe } from './shared/format';
 import { Icon } from './shared/icon';
+import { OnboardingTour } from './shared/onboarding';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, FormsModule, Icon, AgoPipe],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, FormsModule, Icon, AgoPipe, OnboardingTour],
   template: `
     <a class="skip-link" href="#content">Skip to content</a>
     <div class="shell">
@@ -56,6 +58,9 @@ import { Icon } from './shared/icon';
               <div><dt>Scaling</dt><dd>{{ i.scalingKind === 'none' ? 'Local' : i.scalingKind.toUpperCase() }}</dd></div>
             </dl>
           }
+          <button class="tour-link" (click)="onboarding.start()" title="Take the quick tour">
+            <app-icon name="tour" /><span class="tour-link-label">Quick tour</span>
+          </button>
           <button class="operator" (click)="openSettings()" title="Operator settings">
             <app-icon name="user" /><span class="operator-name">{{ settings.actor() }}</span>
           </button>
@@ -131,6 +136,8 @@ import { Icon } from './shared/icon';
       </form>
     </dialog>
 
+    <app-onboarding [mock]="info()?.llmMode === 'mock'" />
+
     <div class="toasts" role="status" aria-live="polite">
       @for (t of toast.toasts(); track t.id) {
         <button class="toast" [class]="'toast toast-' + t.kind" (click)="toast.dismiss(t.id)"><i class="lamp"></i>{{ t.message }}</button>
@@ -143,6 +150,7 @@ export class App {
   protected readonly line = inject(LineService);
   protected readonly settings = inject(SettingsService);
   protected readonly toast = inject(ToastService);
+  protected readonly onboarding = inject(OnboardingService);
   private readonly api = inject(ApiService);
   private readonly dialog = viewChild.required<ElementRef<HTMLDialogElement>>('settingsDialog');
 
@@ -154,6 +162,12 @@ export class App {
   constructor() {
     this.api.info().subscribe({ next: (i) => this.info.set(i), error: () => undefined });
     setInterval(() => this.tick.update((t) => t + 1), 15_000);
+    // First visit: open the tour once the board has loaded, unless the API asked for a token first.
+    if (!this.onboarding.seen()) {
+      setTimeout(() => {
+        if (!this.onboarding.seen() && !this.settings.settingsOpen()) this.onboarding.start();
+      }, 800);
+    }
     // The settings dialog also opens on any 401, so it follows the shared signal.
     effect(() => {
       const el = this.dialog().nativeElement;
