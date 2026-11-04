@@ -5,7 +5,7 @@ import { ApiService } from '../core/api.service';
 import { LineService } from '../core/line.service';
 import { OnboardingService } from '../core/onboarding.service';
 import { SettingsService } from '../core/settings.service';
-import { ToastService } from '../core/toast.service';
+import { errorMessage } from '../core/toast.service';
 import { Icon } from './icon';
 
 type SlideKey = 'welcome' | 'board' | 'control' | 'try';
@@ -106,6 +106,10 @@ const DEMO_WORKFLOW = 'AI Content Pipeline';
             @if (slide().key === 'try' && mock()) {
               <p class="tour-note"><app-icon name="info" />Claude runs in mock mode here, so the demo is free and nothing leaves this machine.</p>
             }
+            @if (slide().key === 'try' && error()) {
+              <!-- Shown here, not as a toast: toasts sit under the modal's backdrop while the tour is open. -->
+              <p class="tour-error s-failed" role="alert"><i class="lamp"></i><span>The demo didn't start: {{ error() }}</span></p>
+            }
           </div>
         </div>
       }
@@ -155,7 +159,6 @@ export class OnboardingTour {
   private readonly line = inject(LineService);
   private readonly api = inject(ApiService);
   private readonly router = inject(Router);
-  private readonly toast = inject(ToastService);
   private readonly dialog = viewChild.required<ElementRef<HTMLDialogElement>>('dialog');
   private readonly primary = viewChild<ElementRef<HTMLButtonElement>>('primary');
 
@@ -165,6 +168,7 @@ export class OnboardingTour {
   protected readonly slide = computed(() => SLIDES[this.index()]);
   protected readonly last = computed(() => this.index() === SLIDES.length - 1);
   protected readonly starting = signal(false);
+  protected readonly error = signal('');
   protected name = '';
 
   constructor() {
@@ -172,6 +176,7 @@ export class OnboardingTour {
       const el = this.dialog().nativeElement;
       if (this.tour.open() && !el.open) {
         this.index.set(0);
+        this.error.set('');
         this.name = this.settings.actor() === 'operator' ? '' : this.settings.actor();
         el.showModal();
       } else if (!this.tour.open() && el.open) {
@@ -217,6 +222,7 @@ export class OnboardingTour {
       return;
     }
     this.starting.set(true);
+    this.error.set('');
     this.api.startRun(workflow.id, workflow.definition.exampleInput ?? {}).subscribe({
       next: (run) => {
         this.starting.set(false);
@@ -225,7 +231,7 @@ export class OnboardingTour {
       },
       error: (e) => {
         this.starting.set(false);
-        this.toast.error(e);
+        this.error.set(errorMessage(e));
       },
     });
   }
